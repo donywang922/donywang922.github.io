@@ -1,7 +1,7 @@
 .head {
     position: fixed;
-    /*animation: head 2s ease both;*/
-    /*opacity: 0;*/
+    animation: head 2s ease both;
+    opacity: 0;
 }
 
 @keyframes head {
@@ -23,6 +23,19 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    animation: coverbg linear;
+    animation-timeline: scroll();
+}
+
+@keyframes coverbg {
+    from {
+        background-position-y: 0;
+        background-position-x: 0;
+    }
+    to {
+        background-position-y: 200px;
+        background-position-x: 100px;
+    }
 }
 
 .cover div {
@@ -53,7 +66,7 @@
 }
 
 @keyframes b {
-    from{
+    from {
         transform: scale(50%);
     }
     30% {
@@ -64,4 +77,14 @@
         opacity: 1;
         transform: scale(100%);
     }
+}
+
+.body {
+    max-width: 60em;
+    padding: 4em;
+}
+
+.body p {
+    color: #555;
+    font-weight: bold;
 }
