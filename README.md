@@ -6,3 +6,6 @@ This is YWsuoyi(Dony)'s personal homepage.
 
 The website is licensed under the MIT license. You can copy and use the source code of the website at will.
 The website includes YWsuoyi's introduction, some of the projects produced, and some of the strange css effects.
+
+## technology stack
+This website is native web. Use html, css and js. Does not include any external libraries or frameworks.
