@@ -5,6 +5,7 @@ body {
     flex-direction: column;
     align-items: center;
     font-family: sans-serif;
+    overflow-x: hidden;
 }
 
 .head {
@@ -41,4 +42,9 @@ body {
     background: linear-gradient(90deg, #fff, #ddd, #fff);
     height: 2px;
     width: 100%;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
 }
