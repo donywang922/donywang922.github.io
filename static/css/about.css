@@ -1,37 +1,51 @@
 .body {
-    max-width: 60em;
-    padding: 4em;
-    display: flex;
+    margin: 4em;
 }
+
 
 .body p {
     color: #555;
     font-weight: bold;
 }
 
-.body .left {
-    padding: 0 4em 0 2em;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.body .right {
+    max-width: 60em;
 }
 
-.body .left img {
-    width: 10em;
-    height: 10em;
+.body > img {
+    width: max(10vw, 7em);
+    height: max(10vw, 7em);
     object-fit: cover;
     border: 10px #ddd solid;
     border-radius: 2em;
-    margin: 2em 0;
-}
-.body .left img:nth-child(2n+1) {
-    transform: rotate(-10deg);
-}
-.body .left img:nth-child(2n) {
-    transform: rotate(10deg);
+    margin: 1em;
 }
 
-.body .left img:nth-child(3n) {
+.body > img:nth-of-type(2n+1) {
+    transform: rotate(-10deg);
+    float: left;
+}
+
+.body > img:nth-of-type(2n) {
+    transform: rotate(10deg);
+    float: right;
+}
+
+.body > img:nth-child(3n) {
     transform: rotate(-5deg);
+}
+
+.btn {
+    display: block;
+    height: 3em;
+    overflow: hidden;
+    max-width: 90%;
+    border: #eee 2px solid;
+    margin: 0 0.5em;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+
+.btn img {
+    height: 100%;
 }
