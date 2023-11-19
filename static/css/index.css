@@ -1,0 +1,67 @@
+.head {
+    position: fixed;
+    /*animation: head 2s ease both;*/
+    /*opacity: 0;*/
+}
+
+@keyframes head {
+    30% {
+        opacity: 0;
+    }
+    to {
+        opacity: 1
+    }
+}
+
+.cover {
+    background: #000 center/100% url("/static/img/cabg2.svg");
+    height: 100vh;
+    width: 100%;
+    color: #fff;
+    font-weight: bolder;
+    font-size: xx-large;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cover div {
+    position: absolute;
+}
+
+.cover .a {
+    animation: a 2s ease both;
+}
+
+@keyframes a {
+    from {
+        opacity: 0;
+        letter-spacing: 0;
+
+    }
+    25% {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        letter-spacing: 1em;
+    }
+}
+
+.cover .b {
+    animation: b 2s ease both;
+}
+
+@keyframes b {
+    from{
+        transform: scale(50%);
+    }
+    30% {
+        opacity: 0;
+
+    }
+    to {
+        opacity: 1;
+        transform: scale(100%);
+    }
+}
