@@ -1,0 +1,40 @@
+.body {
+    max-width: 60em;
+    margin: 4em;
+}
+
+.body p {
+    color: #444;
+    font-weight: bold;
+}
+
+.body > img {
+    float: left;
+    width: min(20em, 20vw);
+    padding: 1em;
+}
+
+.body > a {
+    border-radius: 1em;
+    overflow: hidden;
+    width: 10em;
+    display: block;
+    line-height: 0;
+    padding: 0.4em;
+    background-color: #000;
+    float: right;
+}
+
+.body > a > img {
+    width: 100%;
+}
+
+.body iframe {
+    width: 45%;
+    min-width: 20em;
+    aspect-ratio: 16/9;
+    margin: 1em;
+}
+.body .row{
+    justify-content: space-around;
+}
