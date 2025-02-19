@@ -1,0 +1,237 @@
+* {
+    margin: 0;
+}
+
+body {
+    background: linear-gradient(white, lightgray);
+    position: relative;
+}
+
+.btn {
+    padding: 1em 2em;
+    border-radius: 1em;
+    outline: none;
+    border: none;
+    box-shadow: #0004 1px 1px 2px;
+    background: #fff4;
+    transition: background-color 0.25s;
+
+    &:hover {
+        background: #fff8;
+    }
+
+    &:active {
+        background: #fffc;
+    }
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+}
+
+.action {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-radius: 1em;
+    border: 1px solid gray;
+    margin: 1em;
+
+    transition: background-color 0.25s;
+
+    & > h3 {
+        position: absolute;
+        transform: translateY(-100%);
+        padding-left: 1em;
+    }
+
+    &:hover {
+        background: #0003;
+    }
+
+    & > div {
+        display: none;
+        padding: 1em;
+
+        &.place {
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 1em;
+
+            &:hover img{
+                height: 10em;
+            }
+
+            & > div {
+                display: flex;
+                flex-direction: column;
+                border-radius: 1em;
+                padding: 1em;
+                position: relative;
+                transition: background-color 0.25s;
+
+                &:hover {
+                    background: #fff4;
+                }
+
+                &.select {
+                    background: #fff8;
+                }
+
+                & > img {
+                    height: 5em;
+                    transition: height 0.5s ease;
+                }
+            }
+
+        }
+
+        &.waiting {
+            font-weight: bolder;
+            color: #555;
+        }
+
+        &.soldier {
+            grid-template-columns: 5em 15em;
+
+            .drop {
+                border: 2px solid #fff4;
+                border-radius: 1em;
+                padding: 0.5em;
+                margin-top: 0.5em;
+            }
+        }
+    }
+
+    &.end_turn > .end_turn {
+        display: grid;
+    }
+
+    &.waiting > .waiting {
+        display: grid;
+    }
+
+    &.place > .place {
+        display: grid;
+    }
+
+    &.soldier > .soldier {
+        display: grid;
+    }
+}
+
+.card {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 1em;
+    display: flex;
+    opacity: 0.5;
+    transition: opacity 0.5s ease;
+
+    &:has(*:hover) {
+        opacity: 1;
+
+        & > div {
+            margin-left: -0.5em;
+        }
+    }
+
+    & > div {
+        background: #eee;
+        border-radius: 0.5em;
+        box-shadow: #0008 0 0 8px;
+        margin-left: -8em;
+        transition: margin-left 0.5s ease;
+        z-index: 100;
+        position: relative;
+
+        & > img {
+            height: 15em;
+        }
+
+        & > div {
+            position: absolute;
+            top: 40%;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0 1em;
+        }
+    }
+}
+
+.enemy_card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    margin: 1em;
+
+    & > div {
+        background: #8885;
+        border-radius: 0.5em;
+        box-shadow: #0008 0 0 8px;
+        margin-right: -5.6em;
+        width: 6em;
+        height: 9em;
+    }
+
+    & > h1 {
+        width: 5.2rem;
+        height: 9rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.force {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 20em auto auto auto 20em;
+    grid-gap: 1em;
+
+    & > div {
+        border: 1px solid #000;
+        height: 0.5em;
+        border-radius: 0.5em;
+        display: flex;
+
+        & > div {
+            height: 0.5em;
+            border-radius: 0.5em;
+            width: calc(var(--f) * 1%);
+        }
+    }
+
+    & > .l {
+        justify-content: flex-end;
+
+        & > div {
+            background: #289bff;
+        }
+    }
+
+    & > .r > div {
+        background: #cd1111;
+    }
+}
+
+.info {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: grid;
+    grid-gap: 1em;
+    grid-template-columns: auto auto;
+    align-items: center;
+    margin: 1em;
+
+    & > h2 {
+        color: #555;
+    }
+}

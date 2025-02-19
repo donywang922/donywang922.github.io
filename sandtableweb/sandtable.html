@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="sandtable.css">
+</head>
+<body>
+<div class="ui">
+    <div class="rotate">
+
+        <div class="btn" onclick="rotate_left()">left</div>
+        <div class="btn" onclick="rotate_right()">right</div>
+        <div class="btn" onclick="rotate_up()">up</div>
+        <div class="btn" onclick="rotate_down()">down</div>
+        <div></div>
+        <div class="btn">end turn</div>
+    </div>
+
+</div>
+<div class="status"></div>
+<div class="canvas">
+    <div class="camera">
+        <div class="root">
+            <div class="board">
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const board = document.querySelector('.board')
+    for (let i = 0; i < 32 * 32; i++) {
+        let tile = document.createElement('div')
+        board.append(tile)
+        let h = Math.random() * 10
+        h = Math.round(h)
+        tile.style.transform = `translateZ(${h}px)`
+    }
+
+    const canvas_root = document.querySelector(".root");
+    let rootTransform = {x: 45, z: 0}; // 初始值
+
+    function rotate_left() {
+        rootTransform.z -= 45;
+        canvas_root.style.transform = `rotateX(${rootTransform.x}deg) rotateZ(${rootTransform.z}deg)`;
+    }
+
+    function rotate_right() {
+        rootTransform.z += 45;
+        canvas_root.style.transform = `rotateX(${rootTransform.x}deg) rotateZ(${rootTransform.z}deg)`;
+    }
+
+    function rotate_up() {
+        rootTransform.x -= 15;
+        if (rootTransform.x < 0) rootTransform.x = 0
+        canvas_root.style.transform = `rotateX(${rootTransform.x}deg) rotateZ(${rootTransform.z}deg)`;
+    }
+
+    function rotate_down() {
+        rootTransform.x += 15;
+        if (rootTransform.x > 60) rootTransform.x = 60
+        canvas_root.style.transform = `rotateX(${rootTransform.x}deg) rotateZ(${rootTransform.z}deg)`;
+    }
+
+    const camera = document.querySelector(".camera");
+    let cameraTransform = {x: 0, y: 0, scale: 1};
+    let isDragging = false;
+    let startX, startY;
+
+    // 监听按下鼠标/触摸
+    camera.addEventListener("pointerdown", (event) => {
+        isDragging = true;
+        startX = event.clientX;
+        startY = event.clientY;
+    });
+
+    // 监听移动
+    document.addEventListener("pointermove", (event) => {
+        if (!isDragging) return;
+
+        let deltaX = event.clientX - startX;
+        let deltaY = event.clientY - startY;
+
+        cameraTransform.x += deltaX;
+        cameraTransform.y += deltaY;
+
+        startX = event.clientX;
+        startY = event.clientY;
+
+        updateTransform();
+    });
+
+    // 监听释放鼠标/触摸
+    document.addEventListener("pointerup", () => {
+        isDragging = false;
+    });
+
+    // 监听鼠标滚动缩放
+    camera.addEventListener("wheel", (event) => {
+        event.preventDefault(); // 防止页面滚动
+        let scaleChange = event.deltaY * -0.001; // 细微缩放
+        cameraTransform.scale = Math.min(3, Math.max(0.5, cameraTransform.scale + scaleChange));
+        updateTransform();
+    });
+
+    function updateTransform() {
+        camera.style.transform = `translate(${cameraTransform.x}px, ${cameraTransform.y}px) scale(${cameraTransform.scale})`;
+    }
+</script>
+</html>

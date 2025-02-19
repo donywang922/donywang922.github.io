@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SandTable</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<div class="poster">
+    <h1>SandTable!!!</h1>
+    <img src="img/poster.png" alt="">
+    <div>
+        <label for="c_name">Name: </label><input type="text" id="c_name">
+        <label for="map">Map: </label>
+        <select name="" id="map">
+            <option>map2-ruin</option>
+            <option>map1-forest</option>
+        </select>
+        <button id="create">Create Room!</button>
+    </div>
+    <div>
+        <label for="j_name">Name: </label><input type="text" id="j_name">
+        <label for="room_id">Room ID: </label><input type="number" id="room_id">
+        <button id="join">Join!</button>
+    </div>
+</div>
+<script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js"
+      }
+    }
+</script>
+<script type="module">
+    import {initializeApp} from "firebase/app";
+    import {getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot} from "firebase/firestore";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCXQnBwpo7_lEFHxoSHfe4hDHwrktp9-rU",
+        authDomain: "iat210.firebaseapp.com",
+        projectId: "iat210",
+        storageBucket: "iat210.firebasestorage.app",
+        messagingSenderId: "282613477096",
+        appId: "1:282613477096:web:bf80fdcb0679cd9f69635d",
+        measurementId: "G-HV1P71XW4M"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const cards = [
+        {name: 'Grenade', img: 'img/card/card1', desc: 'Can kill enemies even if obstructed.'},
+        {name: 'Grenade', img: 'img/card/card1', desc: 'Can kill enemies even if obstructed.'},
+        {
+            name: 'WingSuit',
+            img: 'img/card/card1',
+            desc: 'If descending by 1 tile, can move an extra tile, up to 16 tiles in total.'
+        },
+        {
+            name: 'WingSuit',
+            img: 'img/card/card1',
+            desc: 'If descending by 1 tile, can move an extra tile, up to 16 tiles in total.'
+        },
+        {
+            name: 'Machine Gun',
+            img: 'img/card/card1',
+            desc: '-1 range, but can kill all enemies within range every turn. No longer explosive.'
+        },
+        {
+            name: 'Machine Gun',
+            img: 'img/card/card1',
+            desc: '-1 range, but can kill all enemies within range every turn. No longer explosive.'
+        },
+        {name: 'Wired Guidance', img: 'img/card/card1', desc: '+2 range.'},
+        {name: 'Wired Guidance', img: 'img/card/card1', desc: '+2 range.'},
+    ]
+    document.getElementById("create").addEventListener("click", async () => {
+        let name = document.getElementById("c_name").value.trim();
+        if (!name) {
+            alert("Please enter your name!");
+            return;
+        }
+
+        let roomId = Math.floor(100000 + Math.random() * 900000).toString(); // 生成6位随机ID
+        localStorage.setItem("roomId", roomId);
+        localStorage.setItem("userName", name);
+
+        let roomData = {
+            time: Date.now(),
+            user1: name,
+            user2: "",
+            map: document.getElementById("map").value,
+            pieces: [],
+            actions: [],
+            turn: name,
+            user1force: 100,
+            user2force: 100,
+            user1card: [],
+            user2card: [],
+            cards: cards,
+            state: "available"
+        };
+
+        await setDoc(doc(db, "rooms", roomId), roomData);
+        window.open("play.html", "_blank"); // 在新标签页打开
+    });
+
+    document.getElementById("join").addEventListener("click", async () => {
+        let name = document.getElementById("j_name").value.trim();
+        let roomId = document.getElementById("room_id").value.trim();
+        if (!name || !roomId) {
+            alert("Please enter name and room ID!");
+            return;
+        }
+
+        let roomRef = doc(db, "rooms", roomId);
+        let roomSnap = await getDoc(roomRef);
+
+        if (!roomSnap.exists()) {
+            alert("Room does not exist!");
+            return;
+        }
+
+        let roomData = roomSnap.data();
+        if (roomData.state === "end") {
+            alert("Game has ended!");
+            return;
+        }
+
+        if (roomData.user2 === name || !roomData.user2) {
+            await updateDoc(roomRef, {user2: name});
+            localStorage.setItem("roomId", roomId);
+            localStorage.setItem("userName", name);
+            window.open("play.html", "_blank"); // 在新标签页打开
+        } else {
+            alert("Room is already full!");
+        }
+    });
+
+</script>
+</body>
+</html>
