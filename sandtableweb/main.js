@@ -72,7 +72,7 @@ function onBoardLoad() {
     if (flagPieces.length === 0) {
         // **场上没有旗子，放置多个无主旗子，并随机选一个变成我方的**
         let flagTiles = map.tiles.filter(tile => tile.r === 128 && tile.g === 128 && tile.b === 128);
-
+        let counter = 1
         flagTiles.forEach(tile => {
             getData().actions.push({
                 id: 0,
@@ -80,9 +80,10 @@ function onBoardLoad() {
                 x: tile.x,
                 z: tile.z,
                 soldier: 'Flag',
-                soldier_id: Date.now(),
+                soldier_id: counter,
                 side: ""
             });
+            counter++
         });
 
         // **随机选一个旗子设为我方**
@@ -421,7 +422,7 @@ function endTurn() {
     setAction('waiting')
 }
 
-action_menu.querySelector('.end_turn button').addEventListener('click', (e) => {
+action_menu.querySelector('.end_turn button').addEventListener('click', () => {
     endTurn()
 })
 
