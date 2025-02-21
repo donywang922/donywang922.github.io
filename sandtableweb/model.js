@@ -70,6 +70,18 @@ export class Board {
     on_load
     /** @type {string} */
     local_side
+    /** @type {int} */
+    x_size
+    /** @type {int} */
+    z_size
+    /** @type {int} */
+    force_a = 0
+    /** @type {int} */
+    force_b = 0
+    /** @type {int[]} */
+    card_a = []
+    /** @type {int[]} */
+    card_b = []
 
     /**
      * @param {string} url
@@ -105,20 +117,57 @@ export class Board {
         return null
     }
 
+    /**
+     * @param {Piece} piece
+     */
     kill(piece) {
-        if (!piece) return
-        if (this.pieces.has(piece.id)) {
-            piece.remove()
-            this.pieces.delete(piece.id)
+        if (!piece) return;
+        if (!this.pieces.has(piece.id)) return;
+        piece.remove();
+        this.pieces.delete(piece.id);
+        // 获取棋子所属阵营
+        const pieceSide = piece.side;
+        const isLocalSide = (pieceSide === this.local_side);
+
+        if (!piece instanceof Soldier) {
+            // **如果不是 Soldier 类型**
+            if (isLocalSide)
+                this.force_a--;
+            else
+                this.force_b--;
+            return;
+        }
+        // **如果是 Soldier 类型**
+        // 获取旗帜数量
+        const localFlags = Array.from(this.pieces.values()).filter(p => p instanceof Flag && p.side === this.local_side).length;
+        const enemyFlags = Array.from(this.pieces.values()).filter(p => p instanceof Flag && p.side !== this.local_side).length;
+
+        if ((isLocalSide && localFlags < enemyFlags) || (!isLocalSide && enemyFlags < localFlags)) {
+            // **旗帜数量少的一方**
+            const flagDiff = Math.abs(localFlags - enemyFlags);
+            const loss = 1 + Math.pow(flagDiff, 2);
+            if (isLocalSide) {
+                this.force_a -= loss;
+            } else {
+                this.force_b -= loss;
+            }
+            return;
+        }
+        // **旗帜数量相等或更多的一方**
+        if (isLocalSide) {
+            this.force_a--;
+        } else {
+            this.force_b--;
         }
     }
+
 
     /**
      * @param {number} x
      * @param {number} z
      */
     height(x, z) {
-        return this.data[z][x]['h']
+        return this.tile(x, z).h
     }
 
     pieceData() {
@@ -138,27 +187,41 @@ export class Board {
         img.onload = () => {
             let canvas = document.createElement('canvas');
             let ctx = canvas.getContext('2d');
-            canvas.width = canvas.height = 64;
-            ctx.drawImage(img, 0, 0, 64, 64);
-            let imageData = ctx.getImageData(0, 0, 64, 64).data;
-            for (let x = 0; x < 64; x++) {
-                for (let z = 0; z < 64; z++) {
-                    let index = (z * 64 + x) * 4;
+            this.x_size = canvas.width = img.width;
+            this.z_size = canvas.height = img.height;
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            let imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+
+            // 根据图片实际大小初始化棋盘
+            this.data = [];
+            this.tiles = [];
+
+            for (let x = 0; x < img.width; x++) {
+                for (let z = 0; z < img.height; z++) {
+                    let index = (z * img.width + x) * 4;
                     let r = imageData[index];
                     let g = imageData[index + 1];
                     let b = imageData[index + 2];
                     let a = imageData[index + 3] / 16;
                     let height = Math.round(a);
-                    let tile = new Tile(x, z, height, r, g, b, this, root)
-                    if (!this.data[z]) this.data[z] = []
+
+                    let tile = new Tile(x, z, height, r, g, b, this, root);
+                    if (!this.data[z]) this.data[z] = [];
                     this.data[z][x] = tile;
-                    this.tiles.push(tile)
+                    this.tiles.push(tile);
                 }
             }
-            this.on_load()
+
+            this.on_load();
         };
         img.src = url;
     }
+
+    inRange(x, z) {
+        return x >= 0 && x < this.x_size && z >= 0 && z < this.z_size
+    }
+
 
     /**
      * @param {Piece} piece
@@ -308,13 +371,13 @@ export class Piece {
     /**
      * @return {Set.<Piece>}
      */
-    pieceInView() {
+    pieceInView(sameSide = false) {
         const visiblePieces = new Set();
         const viewRange = this.get_view_range();
         if (viewRange === 0) return visiblePieces; // 视野为 0，不需要检测
 
         this.map.pieces.forEach(piece => {
-            if (piece.side === this.side) return; // 只检测敌方单位
+            if (!sameSide && piece.side === this.side) return; // 只检测敌方单位
 
             let dx = Math.abs(piece.x - this.x);
             let dz = Math.abs(piece.z - this.z);
@@ -342,7 +405,7 @@ export class Piece {
                 const z = this.z + dz;
 
                 // 边界检查
-                if (x < 0 || x >= 64 || z < 0 || z >= 64) continue;
+                if (!this.map.inRange(x, z)) continue;
                 tiles.add(this.map.tile(x, z));
             }
         }
@@ -358,6 +421,11 @@ export class Flag extends Piece {
     static baseGeometry = new THREE.CylinderGeometry(0.3, 0.4, 0.2, 16);
     static poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 3, 8); // 旗杆
     static flagGeometry = new THREE.PlaneGeometry(0.7, 0.5); // 旗子
+
+    constructor(id, side, x, z, map, root) {
+        super(id, side, x, z, map, root);
+        this.event_handler['occupy'] = (event) => this.occupyEvent(event)
+    }
 
     gen_object(root) {
         super.gen_object(root)
@@ -376,18 +444,29 @@ export class Flag extends Piece {
         this.flag = new THREE.Mesh(Flag.flagGeometry, flagMaterial);
         this.flag.position.set(0.45, 2.7, 0);
         this.object.add(this.flag);
-        this.tick()
+        this.updateColor()
     }
 
     get_spawn_range() {
         return 4
     }
 
+    get_view_range() {
+        return 2
+    }
+
+    /**
+     * @param {actionData} event
+     */
+    occupyEvent(event) {
+        this.side = event.side;
+        this.updateColor()
+    }
+
     tick() {
-        let spawnTiles = this.spawnable_tiles();
+        const piecesIn = this.pieceInView(true)
         let side = '';
-        for (let tile of spawnTiles) {
-            let piece = this.map.piece(tile.x, tile.z);
+        for (let piece of piecesIn) {
             if (piece && piece instanceof Soldier) {
                 if (side === '')
                     side = piece.side
@@ -399,6 +478,10 @@ export class Flag extends Piece {
             if (this.side === "") this.side = side
             else this.side = ""
         }
+        this.updateColor()
+    }
+
+    updateColor() {
         if (this.side === this.map.local_side) {
             this.flag.material.color.set(local_color); // 我方（蓝色）
         } else if (this.side !== "") {
@@ -494,14 +577,21 @@ export class Soldier extends Piece {
         }
     }
 
+    /**
+     * @param {actionData} event
+     */
     moveEvent(event) {
         this.object.lookAt(event.x, this.y / 2, event.z);
         this.x = event.x;
         this.z = event.z;
         this.update_pos()
         this.waiting = 1
+        this.bullet = 0
     }
 
+    /**
+     * @param {actionData} event
+     */
     shotEvent(event) {
         this.object.lookAt(event.x, this.y / 2, event.z);
         let enemy = this.map.piece(event.x, event.z);
@@ -518,7 +608,7 @@ export class Soldier extends Piece {
      * @return {int}
      */
     get_strength() {
-        return 1
+        return 2
     }
 
     /**
@@ -540,7 +630,7 @@ export class Soldier extends Piece {
 
             for (let [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
                 let nx = x + dx, nz = z + dz;
-                if (nx < 0 || nx >= 64 || nz < 0 || nz >= 64) continue;
+                if (!this.map.inRange(nx, nz)) continue;
 
                 let nextTile = this.map.tile(nx, nz);
                 let heightDiff = nextTile.h - tile.h;
@@ -575,11 +665,11 @@ export class Assault extends Soldier {
     }
 
     getBullet() {
-        return 5
+        return 3
     }
 
     get_strength() {
-        return 2
+        return 4
     }
 
     moveable_tiles() {
@@ -599,7 +689,7 @@ export class Assault extends Soldier {
 
             for (let [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
                 let nx = x + dx, nz = z + dz;
-                if (nx < 0 || nx >= 64 || nz < 0 || nz >= 64) continue;
+                if (!this.map.inRange(nx, nz)) continue;
                 if (Math.abs(nx - this.x) > maxRange || Math.abs(nz - this.z) > maxRange) continue;
 
                 let nextTile = this.map.tile(nx, nz);
@@ -630,10 +720,11 @@ export class Engineer extends Soldier {
     }
 
     shotEvent(event) {
+        this.object.lookAt(event.x, this.y / 2, event.z);
         for (let i = event.x - 1; i <= event.x + 1; i++) {
             for (let j = event.z - 1; j <= event.z + 1; j++) {
                 let enemy = this.map.piece(i, j);
-                if (enemy)
+                if (enemy && enemy instanceof Soldier)
                     this.map.kill(enemy)
             }
         }
@@ -652,7 +743,12 @@ export class Sniper extends Soldier {
     }
 
     get_view_range() {
-        return 12
+        return this.bullet > 0 ? 8 : 0;
+    }
+
+
+    get_strength() {
+        return 1
     }
 
     get_img_url() {

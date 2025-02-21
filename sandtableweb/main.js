@@ -8,43 +8,44 @@ let map
 
 export function onConnected() {
     enginInit()
-    map = new Board(`img/${getData().map}.png`, getBoard(), getName(), onBoardLoad)
+    const data = getData();
+    const localName = getName();
+    map = new Board(`img/map/${data.map}.png`, getBoard(), localName, onBoardLoad)
+    const isUser1 = data.user1 === localName
+    map.force_a = isUser1 ? data.user1force : data.user2force
+    map.force_b = isUser1 ? data.user2force : data.user1force
+    map.card_a = isUser1 ? data.user1card : data.user2card
+    map.card_b = isUser1 ? data.user2card : data.user1card
     updateUI()
 }
 
-function updateUI() {
-    const data = getData();
-    const localName = getName();
-
-    // 更新 action 面板中的玩家名称
-    document.querySelector('.action h3').innerText = localName;
-
+function updateNumericUI() {
     // 更新 force (兵力数值)
-    document.querySelector('.force span.l').innerText = data.user1 === localName ? data.user1force : data.user2force;
-    document.querySelector('.force span.r').innerText = data.user1 !== localName ? data.user1force : data.user2force;
+    document.querySelector('.force span.l').innerText = map.force_a
+    document.querySelector('.force span.r').innerText = map.force_b;
+
+    let total_force = map.x_size === 32 ? 1.28 : 2.56
 
     // 更新 force 进度条
-    document.querySelector('.force div.l').style.setProperty('--f', data.user1 === localName ? data.user1force : data.user2force);
-    document.querySelector('.force div.r').style.setProperty('--f', data.user1 !== localName ? data.user1force : data.user2force);
-
-    // 确定对手名称
-    const enemyName = data.user1 === localName ? data.user2 : data.user1;
-    document.querySelector('.info h3').innerText = enemyName || "Waiting...";
-    document.querySelector('.info h2').innerText = `#${getRoom()}`;
-
+    document.querySelector('.force div.l').style.setProperty('--f', map.force_a / total_force);
+    document.querySelector('.force div.r').style.setProperty('--f', map.force_b / total_force);
     // 更新敌方卡片数量
-    document.querySelector('.enemy_card h1').innerText = data.user1 === localName ? data.user2card.length : data.user1card.length;
+    document.querySelector('.enemy_card h1').innerText = map.card_b.length;
+    updatePlaceCount()
+}
 
+function updateCardUI() {
     // 更新卡牌区 (清空后重新添加)
     const cardContainer = document.querySelector('.card');
     cardContainer.innerHTML = "";
-    const userCards = data.user1 === localName ? data.user1card : data.user2card;
+    const userCards = map.card_a;
 
-    userCards.forEach(card => {
+    userCards.forEach(card_id => {
+        const card = getData().cards[card_id]
         const cardElement = document.createElement('div');
         cardElement.draggable = true;
         cardElement.innerHTML = `
-            <img src="${card.img}" alt="">
+            <img src="${card.img}.png" alt="">
             <div>
                 <h3>${card.name}</h3>
                 <p>${card.desc}</p>
@@ -55,6 +56,22 @@ function updateUI() {
         });
         cardContainer.appendChild(cardElement);
     });
+}
+
+function updateUI() {
+    const data = getData();
+    const localName = getName();
+
+    // 更新 action 面板中的玩家名称
+    document.querySelector('.action h3').innerText = localName;
+
+    // 确定对手名称
+    const enemyName = data.user1 === localName ? data.user2 : data.user1;
+    document.querySelector('.info h3').innerText = enemyName || "Waiting...";
+    document.querySelector('.info h2').innerText = `#${getRoom()}`;
+
+    updateNumericUI()
+    updateCardUI()
 
     if (data.turn !== getName()) {
         setAction('waiting')
@@ -90,14 +107,18 @@ function onBoardLoad() {
         let randomIndex = Math.floor(Math.random() * flagTiles.length);
         getData().actions[randomIndex].side = mySide;
 
-        onUpdate(getData());
+        onUpdate();
         send();
     } else if (myFlags.length === 0) {
         // **场上有旗子但没有我方旗子，随机选一个无主旗子改为我方**
         if (emptyFlags.length > 0) {
             let randomFlag = emptyFlags[Math.floor(Math.random() * emptyFlags.length)];
-            randomFlag.side = mySide;
-            getData().pieces = map.pieceData(); // 更新数据
+            getData().actions.push({
+                id: randomFlag.id,
+                type: 'occupy',
+                side: getName()
+            });
+            onUpdate()
             send();
         }
     }
@@ -111,14 +132,14 @@ let action_index = 0
 /**
  * @param {roomData} data
  */
-export function onUpdate(data) {
+export function onUpdate(data = getData()) {
     if (data.actions.length === 0 && action_index !== 0) {
         forceRefresh()
+        tick()
     }
     while (data.actions.length > action_index) {
         action_index++
         onAction(data.actions[action_index - 1]);
-
     }
 }
 
@@ -130,12 +151,17 @@ function onAction(action) {
         switch (action.type) {
             case 'end_turn':
                 if (action.side === getName()) return;
-                getData().actions = []
-                getData().turn = getName()
-                map.pieces.forEach(piece => {
-                    piece.tick()
-                })
-                getData().pieces = map.pieceData()
+                const data = getData();
+                const localName = getName();
+                const isUser1 = data.user1 === localName
+                data.actions = []
+                data.turn = localName
+                tick()
+                data.pieces = map.pieceData()
+                data.user1force = isUser1 ? map.force_a : map.force_b
+                data.user2force = isUser1 ? map.force_b : map.force_a
+                data.user1card = isUser1 ? map.card_a : map.card_b
+                data.user2card = isUser1 ? map.card_b : map.card_a
                 action_index = 0
                 send()
                 setAction('end_turn')
@@ -146,6 +172,7 @@ function onAction(action) {
         }
     }
     map.piece(action.id).handle_event(action)
+    updateNumericUI()
 }
 
 function forceRefresh() {
@@ -169,9 +196,12 @@ function forceRefresh() {
     for (let [id, piece] of map.pieces) {
         if (!tmp_set.has(id)) map.kill(piece)
     }
+    updateUI()
     action_index = 0
-    onUpdate(getData())
+    onUpdate()
 }
+
+const assaultMax = 16, engineerMax = 8, sniperMax = 4
 
 /**
  * @param {string} type
@@ -181,16 +211,60 @@ function forceRefresh() {
  * @param {int} z
  */
 function placePiece(type, id, side, x, z) {
+    let piece;
     switch (type) {
         case 'Assault':
-            return new Assault(id, side, x, z, map, getPieces())
+            piece = new Assault(id, side, x, z, map, getPieces());
+            break;
         case 'Engineer':
-            return new Engineer(id, side, x, z, map, getPieces())
+            piece = new Engineer(id, side, x, z, map, getPieces());
+            break;
         case 'Sniper':
-            return new Sniper(id, side, x, z, map, getPieces())
+            piece = new Sniper(id, side, x, z, map, getPieces());
+            break;
         case 'Flag':
-            return new Flag(id, side, x, z, map, getPieces())
+            piece = new Flag(id, side, x, z, map, getPieces());
+            break;
     }
+
+    // 更新 .action .place 中 span 的文本
+    updatePlaceCount()
+    return piece;
+}
+
+function updatePlaceCount() {
+    const [assaultCount, engineerCount, sniperCount] = countSoldier()
+    document.querySelector('[data-soldier="Assault"] span').innerText = `${assaultCount}/${assaultMax}`;
+    document.querySelector('[data-soldier="Engineer"] span').innerText = `${engineerCount}/${engineerMax}`;
+    document.querySelector('[data-soldier="Sniper"] span').innerText = `${sniperCount}/${sniperMax}`;
+}
+
+function countSoldier() {
+    const assaultCount = Array.from(map.pieces.values()).filter(p => (p.side === getName() && p instanceof Assault)).length;
+    const engineerCount = Array.from(map.pieces.values()).filter(p => (p.side === getName() && p instanceof Engineer)).length;
+    const sniperCount = Array.from(map.pieces.values()).filter(p => (p.side === getName() && p instanceof Sniper)).length;
+    return [assaultCount, engineerCount, sniperCount]
+}
+
+
+function canPlace() {
+    const [assaultCount, engineerCount, sniperCount] = countSoldier()
+    switch (current_soldier_type) {
+        case 'Assault':
+            return assaultCount < assaultMax;
+        case 'Engineer':
+            return engineerCount < engineerMax;
+        case 'Sniper':
+            return sniperCount < sniperMax;
+    }
+    return false;
+}
+
+
+function tick() {
+    map.pieces.forEach(piece => {
+        piece.tick()
+    })
 }
 
 /**@type {Set.<Soldier>}*/
@@ -215,6 +289,7 @@ export function onTileClick(tile) {
     if (current_action === 'place') {
         if (current_soldier_type === '') return;
         if (!highlighted_tiles.has(tile)) return;
+        if (!canPlace()) return;
         getData().actions.push({
             id: 0,
             type: 'place',
@@ -224,7 +299,7 @@ export function onTileClick(tile) {
             soldier_id: Date.now(),
             side: getName()
         })
-        onUpdate(getData())
+        onUpdate()
         send()
         return;
     }
@@ -236,7 +311,7 @@ export function onTileClick(tile) {
             x: tile.x,
             z: tile.z,
         })
-        onUpdate(getData())
+        onUpdate()
         send()
         deselectPiece(tmp)
         setAction('end_turn')
@@ -261,7 +336,7 @@ export function onTileClick(tile) {
             }
         });
 
-        onUpdate(getData());
+        onUpdate();
         send();
         selected_pieces.forEach(piece => {
             piece.set_highlight(false)
@@ -290,6 +365,7 @@ export function onPieceClick(piece) {
     highlighted_tiles.clear()
 
     if (highlighted_enemy.has(piece)) {
+        /**@type {Soldier}*/
         let tmp = selected_pieces.values().next().value;
         getData().actions.push({
             id: tmp.id,
@@ -297,10 +373,14 @@ export function onPieceClick(piece) {
             x: piece.x,
             z: piece.z,
         });
-        onUpdate(getData());
+        onUpdate();
         send();
-        deselectPiece(tmp)
-        setAction('end_turn')
+        highlighted_tiles.clear()
+        highlightTile(highlighted_tiles)
+        if (tmp.bullet === 0) {
+            deselectPiece(tmp)
+            setAction('end_turn')
+        }
         return;
     }
 
@@ -316,15 +396,16 @@ export function onBackgroundClick() {
     if (current_action === 'waiting') return;
 
     highlighted_tiles.clear()
+    highlightTile(highlighted_tiles)
     selected_pieces.forEach(piece => {
         piece.set_highlight(false)
     })
+    selected_pieces.clear()
     highlighted_tiles.clear()
     highlighted_enemy.forEach(enemy => {
         enemy.set_highlight(false)
     })
-    selected_pieces.clear()
-    highlightTile(highlighted_tiles)
+
     setAction('end_turn')
 }
 
