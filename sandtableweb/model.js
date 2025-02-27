@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {canSee} from "./engin.js";
+import {canReach, canSee} from "./engin.js";
 
 export class Tile {
     static geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -45,7 +45,7 @@ export class Tile {
      * @param {THREE.Object3D} root
      */
     gen_object(root) {
-        let height = this.h / 2;
+        let height = this.h;
 
         let material = new THREE.MeshStandardMaterial({
             color: new THREE.Color(this.r / 255, this.g / 255, this.b / 255), roughness: 0.6, metalness: 0.2
@@ -113,39 +113,26 @@ export class Board {
         if (!z) return this.pieces.get(x)
         for (const [, piece] of this.pieces) {
             if (piece.z === z && piece.x === x) return piece;
+            if (piece instanceof Tank) {
+                if (piece.x - 1 <= x && piece.z - 1 <= z && piece.x + 1 >= x && piece.z + 1 >= z) return piece;
+            }
         }
         return null
     }
 
     /**
-     * @param {Piece} piece
+     * @param {int} loss
+     * @param {string} side
      */
-    kill(piece) {
-        if (!piece) return;
-        if (!this.pieces.has(piece.id)) return;
-        piece.remove();
-        this.pieces.delete(piece.id);
-        // 获取棋子所属阵营
-        const pieceSide = piece.side;
-        const isLocalSide = (pieceSide === this.local_side);
-
-        if (!piece instanceof Soldier) {
-            // **如果不是 Soldier 类型**
-            if (isLocalSide)
-                this.force_a--;
-            else
-                this.force_b--;
-            return;
-        }
-        // **如果是 Soldier 类型**
-        // 获取旗帜数量
+    calcLoss(loss, side) {
+        const isLocalSide = (side === this.local_side);
         const localFlags = Array.from(this.pieces.values()).filter(p => p instanceof Flag && p.side === this.local_side).length;
-        const enemyFlags = Array.from(this.pieces.values()).filter(p => p instanceof Flag && p.side !== this.local_side).length;
+        const enemyFlags = Array.from(this.pieces.values()).filter(p => p instanceof Flag && p.side !== "" && p.side !== this.local_side).length;
 
         if ((isLocalSide && localFlags < enemyFlags) || (!isLocalSide && enemyFlags < localFlags)) {
             // **旗帜数量少的一方**
             const flagDiff = Math.abs(localFlags - enemyFlags);
-            const loss = 1 + Math.pow(flagDiff, 2);
+            loss *= 1 + Math.pow(flagDiff, 2);
             if (isLocalSide) {
                 this.force_a -= loss;
             } else {
@@ -161,6 +148,19 @@ export class Board {
         }
     }
 
+    /**
+     * @param {int} x
+     * @param {int} z
+     * @param {int} bullet
+     * @param {int} explode
+     * @param {int} pierce
+     */
+    damage(x, z, bullet, explode, pierce) {
+        let target = this.piece(x, z);
+        if (target) {
+            target.damage(bullet, explode, pierce)
+        }
+    }
 
     /**
      * @param {number} x
@@ -203,8 +203,8 @@ export class Board {
                     let r = imageData[index];
                     let g = imageData[index + 1];
                     let b = imageData[index + 2];
-                    let a = imageData[index + 3] / 16;
-                    let height = Math.round(a);
+                    let a = imageData[index + 3];
+                    let height = a === 255 ? 2 : 1;
 
                     let tile = new Tile(x, z, height, r, g, b, this, root);
                     if (!this.data[z]) this.data[z] = [];
@@ -242,16 +242,18 @@ export class Board {
     }
 
     /**
+     * @param {boolean} flag
      * @return {Set.<Tile>}
      */
-    spawnable_tiles() {
+    spawnable_tiles(flag = false) {
         const myTiles = new Set();
         const enemyTiles = new Set();
 
         this.pieces.forEach(piece => {
+
             const tiles = piece.spawnable_tiles();
             if (piece.side === this.local_side) { // 我方棋子
-                tiles.forEach(tile => myTiles.add(tile));
+                if (!flag || piece instanceof Flag) tiles.forEach(tile => myTiles.add(tile));
             } else { // 敌方棋子
                 tiles.forEach(tile => enemyTiles.add(tile));
             }
@@ -292,6 +294,7 @@ export class Piece {
     map
     /** @type {string}*/
     side
+    waiting = 0
 
     /**
      * @param {number} id
@@ -332,7 +335,7 @@ export class Piece {
     }
 
     toData() {
-        return {id: this.id, x: this.x, z: this.z, type: this.type, side: this.side};
+        return {id: this.id, x: this.x, z: this.z, type: this.type, side: this.side, waiting: this.waiting};
     }
 
     /**
@@ -346,12 +349,22 @@ export class Piece {
         root.add(piece);
     }
 
+    /**
+     * @param {int} bullet
+     * @param {int} explode
+     * @param {int} pierce
+     */
+    damage(bullet, explode, pierce) {
+
+    }
+
     remove() {
         this.object.parent.remove(this.object);
+        this.map.pieces.delete(this.id);
     }
 
     update_pos() {
-        this.object.position.set(this.x, this.y / 2, this.z);
+        this.object.position.set(this.x, this.y, this.z);
     }
 
     /**
@@ -373,15 +386,16 @@ export class Piece {
      */
     pieceInView(sameSide = false) {
         const visiblePieces = new Set();
-        const viewRange = this.get_view_range();
+        let viewRange = this.get_view_range();
         if (viewRange === 0) return visiblePieces; // 视野为 0，不需要检测
+        viewRange += 0.5
 
         this.map.pieces.forEach(piece => {
             if (!sameSide && piece.side === this.side) return; // 只检测敌方单位
 
             let dx = Math.abs(piece.x - this.x);
             let dz = Math.abs(piece.z - this.z);
-            if (dx > viewRange || dz > viewRange) return; // 超出正方形范围
+            if (dx * dx + dz * dz > viewRange * viewRange) return;
 
             if (canSee(this, piece)) {
                 visiblePieces.add(piece);
@@ -406,7 +420,9 @@ export class Piece {
 
                 // 边界检查
                 if (!this.map.inRange(x, z)) continue;
-                tiles.add(this.map.tile(x, z));
+                let tile = this.map.tile(x, z)
+                if (tile.h > 1) continue
+                tiles.add(tile);
             }
         }
         return tiles;
@@ -468,15 +484,19 @@ export class Flag extends Piece {
         let side = '';
         for (let piece of piecesIn) {
             if (piece && piece instanceof Soldier) {
-                if (side === '')
-                    side = piece.side
-                else if (side !== piece.side)
-                    return
+                if (side === '') side = piece.side
+                else if (side !== piece.side) return
             }
         }
         if (side !== '' && side !== this.side) {
+            this.waiting++
+        } else {
+            if (this.waiting > 0) this.waiting--
+        }
+        if (this.waiting > 1) {
             if (this.side === "") this.side = side
             else this.side = ""
+            this.waiting = 0
         }
         this.updateColor()
     }
@@ -523,12 +543,13 @@ export class Soldier extends Piece {
         return 'solider'
     }
 
+    get_img_url() {
+        return 'img/Soldier.png'
+    }
+
     toData() {
         return {
-            ...super.toData(),
-            equip: this.equip,
-            waiting: this.waiting,
-            bullet: this.bullet
+            ...super.toData(), equip: this.equip, bullet: this.bullet
         };
     }
 
@@ -541,19 +562,267 @@ export class Soldier extends Piece {
         return 1;
     }
 
-    get_view_range() {
-        return this.bullet > 0 ? super.get_view_range() : 0;
-    }
-
     tick() {
         if (this.waiting === 10) this.waiting = 0
         if (this.waiting > 0) this.waiting--
         if (this.waiting === 0) this.bullet = this.getBullet()
     }
 
-    get_img_url() {
-        return 'img/Soldier.png'
+    /**
+     * @param {actionData} event
+     */
+    moveEvent(event) {
     }
+
+    /**
+     * @param {actionData} event
+     */
+    shotEvent(event) {
+    }
+
+
+    set_highlight(highlight) {
+        this.object.children[0].material.color.set(highlight ? this.hcolor : this.color);
+    }
+
+
+}
+
+export class Tank extends Soldier {
+    static baseGeometry = new THREE.CylinderGeometry(1.4, 1.4, 0.2, 16);
+    static roleGeometry = new THREE.PlaneGeometry(2.8, 1);
+    static healthGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+    static healthMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
+    heal
+    dir = 0
+
+    constructor(id, side, x, z, map, root) {
+        super(id, side, x, z, map, root);
+        this.health = 27
+    }
+
+    get type() {
+        return 'Tank'
+    }
+
+    get_img_url() {
+        return 'img/soldier/tank.png'
+    }
+
+    toData() {
+        return {
+            ...super.toData(),
+            health: this.heal,
+            direction: this.direction
+        };
+    }
+
+    set direction(direction) {
+        this.dir = direction;
+        this.object.rotation.y = direction * Math.PI / 2;
+    }
+
+    get direction() {
+        return this.dir;
+    }
+
+
+    set health(health) {
+        this.heal = health; // **血量范围：0 ~ 3**
+        if (this.heal > 27) this.heal = 27
+
+        // **更新血量立方体的显示状态**
+        if (this.healthCubes) {
+            for (let i = 0; i < 3; i++) {
+                this.healthCubes[i].position.y = (i * 9 < this.heal) ? 0.2 : 0;
+            }
+        }
+    }
+
+
+    get health() {
+        return this.heal
+    }
+
+    gen_object(root) {
+        super.gen_object(root);
+        let baseMaterial = new THREE.MeshStandardMaterial({color: this.color});
+        let base = new THREE.Mesh(Tank.baseGeometry, baseMaterial);
+        base.position.y = 0.1;
+
+        let roleMaterial = new THREE.MeshStandardMaterial({
+            map: new THREE.TextureLoader().load(this.get_img_url()), transparent: true, side: THREE.DoubleSide
+        });
+        let role = new THREE.Mesh(Tank.roleGeometry, roleMaterial);
+        role.position.y = 0.7;
+        role.rotateY(-Math.PI / 2);
+
+        this.object.add(base);
+        this.object.add(role);
+
+        // **创建血量立方体**
+        this.healthCubes = []
+        for (let i = 0; i < 3; i++) {
+            let cube = new THREE.Mesh(Tank.healthGeometry, Tank.healthMaterial);
+            cube.position.set(0.6, 0.7, -0.6 + i * 0.6);
+            this.healthCubes.push(cube);
+            this.object.add(cube);
+        }
+    }
+
+
+    get_view_range() {
+        return 8
+    }
+
+
+    /**
+     * @param {int} x
+     * @param {int} z
+     * @return {[int]}
+     */
+    toLocal(x, z) {
+        switch (this.direction) {
+            case 0:
+                return [x, z]
+            case 1:
+                return [-z, x]
+            case 2:
+                return [-x, -z]
+            case 3:
+                return [z, -x]
+        }
+    }
+
+    /**
+     * @param {int} x
+     * @param {int} z
+     * @return {[int]}
+     */
+    toWorld(x, z) {
+        switch (this.direction) {
+            case 0:
+                return [x, z]
+            case 1:
+                return [z, -x]
+            case 2:
+                return [-x, -z]
+            case 3:
+                return [-z, x]
+        }
+    }
+
+    /**
+     * @param {int} cx
+     * @param {int} cz
+     * @param {Board} map
+     * @param {?Tank} tank
+     * @return {boolean}
+     */
+    static canPlaceTank(cx, cz, map, tank = null) {
+        for (let x = cx - 1; x <= cx + 1; x++) {
+            for (let z = cz - 1; z <= cz + 1; z++) {
+                if (!map.inRange(x, z)) return false;
+                let p = map.piece(x, z)
+                if (p && p !== tank) return false;
+                let tile = map.tile(x, z);
+                if (tile.h > 1) return false;
+            }
+        }
+        return true;
+    }
+
+    canMoveTank(cx, cz) {
+        return Tank.canPlaceTank(this.x + cx, this.z + cz, this.map, this)
+    }
+
+    static tile_to_check = [//hx hz x z r
+        [0, 2, 0, 1, 0],//↑
+        [0, 3, 0, 2, 0],//↑↑
+        [-2, 0, 0, 0, -1],//↶
+        [-3, 0, -1, 0, -1],//↶←
+        [2, 0, 0, 0, 1],//↷
+        [3, 0, 1, 0, 1],//↷→
+        [0, -2, 0, 0, 2],//↷↷
+        [-1, 2, 0, 1, -1],//↑↶
+        [1, 2, 0, 1, 1]//↑↷
+    ]
+
+    moveable_tiles() {
+        const tiles = new Set();
+        if (this.waiting > 0) return tiles
+        Tank.tile_to_check.forEach(tile => {
+            let [x, z] = this.toWorld(tile[2], tile[3])
+            if (this.canMoveTank(x, z)) {
+                let [x, z] = this.toWorld(tile[0], tile[1])
+                tiles.add(this.map.tile(this.x + x, this.z + z))
+            }
+        })
+        return tiles
+    }
+
+    /**
+     * @return {Set.<Piece>}
+     */
+    pieceInView(sameSide = false) {
+        const visiblePieces = new Set();
+        if (this.bullet <= 0) return visiblePieces;
+        let viewRange = this.get_view_range();
+        if (viewRange === 0) return visiblePieces; // 视野为 0，不需要检测
+        viewRange += 0.5
+
+        this.map.pieces.forEach(piece => {
+            if (!sameSide && piece.side === this.side) return; // 只检测敌方单位
+
+            let dx = Math.abs(piece.x - this.x);
+            let dz = Math.abs(piece.z - this.z);
+            if (dx * dx + dz * dz > viewRange * viewRange) return;
+            let [lx, lz] = this.toLocal(dx, dz)
+            if (Math.abs(lz) <= Math.abs(lx)) return;
+            if (canSee(this, piece)) {
+                visiblePieces.add(piece);
+            }
+        });
+
+        return visiblePieces;
+    }
+
+    moveEvent(event) {
+        let [x, z] = this.toLocal(event.x - this.x, event.z - this.z)
+        Tank.tile_to_check.forEach(tile => {
+            if (x === tile[0] && z === tile[1]) {
+                let [tx, tz] = this.toWorld(tile[2], tile[3])
+                this.x += tx;
+                this.z += tz;
+                this.direction = (this.direction + 4 + tile[4]) % 4
+                this.update_pos()
+                this.waiting = 1
+                this.bullet = 0
+            }
+        })
+    }
+
+    shotEvent(event) {
+        for (let i = event.x - 1; i <= event.x + 1; i++) {
+            for (let j = event.z - 1; j <= event.z + 1; j++) {
+                this.map.damage(i, j, 0, 1, 1)
+            }
+        }
+        this.bullet--;
+        this.waiting = 1
+    }
+
+
+    damage(bullet, explode, pierce) {
+        this.health -= pierce;
+        if (this.health === 0) {
+            this.remove()
+            this.map.calcLoss(8, this.side)
+        }
+    }
+}
+
+export class Humanoid extends Soldier {
 
     gen_object(root) {
         super.gen_object(root);
@@ -578,33 +847,6 @@ export class Soldier extends Piece {
     }
 
     /**
-     * @param {actionData} event
-     */
-    moveEvent(event) {
-        this.object.lookAt(event.x, this.y / 2, event.z);
-        this.x = event.x;
-        this.z = event.z;
-        this.update_pos()
-        this.waiting = 1
-        this.bullet = 0
-    }
-
-    /**
-     * @param {actionData} event
-     */
-    shotEvent(event) {
-        this.object.lookAt(event.x, this.y / 2, event.z);
-        let enemy = this.map.piece(event.x, event.z);
-        this.map.kill(enemy)
-        this.bullet--;
-        this.waiting = 1
-    }
-
-    set_highlight(highlight) {
-        this.object.children[0].material.color.set(highlight ? this.hcolor : this.color);
-    }
-
-    /**
      * @return {int}
      */
     get_strength() {
@@ -615,7 +857,6 @@ export class Soldier extends Piece {
      * @return {Set.<Tile>}
      */
     moveable_tiles() {
-
         const tiles = new Set();
         if (this.waiting > 0) return tiles
         let strength = this.get_strength();
@@ -631,19 +872,23 @@ export class Soldier extends Piece {
             for (let [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
                 let nx = x + dx, nz = z + dz;
                 if (!this.map.inRange(nx, nz)) continue;
-
                 let nextTile = this.map.tile(nx, nz);
-                let heightDiff = nextTile.h - tile.h;
-                if (Math.abs(heightDiff) > 3) continue
-                let nextStrength = strength - 1 - Math.max(0, heightDiff - 1);
+                if (nextTile.h > 1) continue
+                let nextStrength = strength - 1
                 if (nextStrength < 0) continue;
+                // **禁止穿过对角墙**
+                if (Math.abs(dx) === 1 && Math.abs(dz) === 1) {
+                    // **对角方向：检查两个方向的墙体**
+                    let check1 = this.map.tile(x + dx, z); // 水平方向
+                    let check2 = this.map.tile(x, z + dz); // 垂直方向
+                    if (check1.h > 1 && check2.h > 1) continue;
+                }
                 if (!visited.has(nextTile)) {
                     queue.push({x: nx, z: nz, strength: nextStrength});
                     visited.add(nextTile)
                 }
             }
         }
-
         for (let piece of this.map.pieces.values()) {
             tiles.delete(this.map.tile(piece.x, piece.z));
         }
@@ -651,16 +896,50 @@ export class Soldier extends Piece {
         return tiles;
     }
 
+    /**
+     * @return {Set.<Piece>}
+     */
+    pieceInView(sameSide = false) {
+        if (this.bullet > 0) return super.pieceInView(sameSide);
+        return new Set()
+    }
+
+    damage(bullet, explode, pierce) {
+        this.remove()
+        this.map.calcLoss(1, this.side)
+    }
+
+    /**
+     * @param {actionData} event
+     */
+    moveEvent(event) {
+        this.object.lookAt(event.x, this.y, event.z);
+        this.x = event.x;
+        this.z = event.z;
+        this.update_pos()
+        this.waiting = 1
+        this.bullet = 0
+    }
+
+    /**
+     * @param {actionData} event
+     */
+    shotEvent(event) {
+        this.object.lookAt(event.x, this.y, event.z);
+        this.map.damage(event.x, event.z, 1, 0, 0)
+        this.bullet--;
+        this.waiting = 1
+    }
 }
 
-export class Assault extends Soldier {
+
+export class Assault extends Humanoid {
     get type() {
         return 'Assault'
     }
 
     get_img_url() {
-        if (this.equip === 'WingSuit')
-            return 'img/soldier/assault_wingsuit.png';
+        if (this.equip === 'Grapple') return 'img/soldier/assault_wingsuit.png';
         return 'img/soldier/assault.png';
     }
 
@@ -673,61 +952,78 @@ export class Assault extends Soldier {
     }
 
     moveable_tiles() {
-        if (this.equip !== 'WingSuit')
-            return super.moveable_tiles();
-        const tiles = new Set();
-        let maxRange = 16;
-        let baseStrength = this.get_strength();
-        let queue = [{x: this.x, z: this.z, strength: baseStrength}];
-        let visited = new Set();
-
-        while (queue.length > 0) {
-            let {x, z, strength} = queue.shift();
-            let tile = this.map.tile(x, z);
-            tiles.add(tile);
-            if (strength === 0) continue
-
-            for (let [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
-                let nx = x + dx, nz = z + dz;
+        let tiles = super.moveable_tiles();
+        if (this.equip !== 'Grapple') return tiles;
+        const grappleRange = 8;
+        for (let dx = -grappleRange; dx <= grappleRange; dx++) {
+            for (let dz = -grappleRange; dz <= grappleRange; dz++) {
+                let nx = this.x + dx, nz = this.z + dz;
                 if (!this.map.inRange(nx, nz)) continue;
-                if (Math.abs(nx - this.x) > maxRange || Math.abs(nz - this.z) > maxRange) continue;
-
-                let nextTile = this.map.tile(nx, nz);
-                let heightDiff = nextTile.h - tile.h;
-                if (heightDiff > 0) heightDiff -= 1
-                let nextStrength = strength - 1 - heightDiff;
-                if (nextStrength < 0) continue;
-
-                if (!visited.has(nextTile)) {
-                    queue.push({x: nx, z: nz, strength: nextStrength});
-                    visited.add(nextTile);
+                let tile = this.map.tile(nx, nz);
+                if (tile.h > 1) {
+                    if (Math.abs(dx) >= Math.abs(dz)) {
+                        let wx = nx - Math.sign(dx)
+                        tile = this.map.tile(wx, nz);
+                        if (canReach(this, tile)) {
+                            tiles.add(tile);
+                        }
+                    }
+                    if (Math.abs(dx) <= Math.abs(dz)) {
+                        let wz = nz - Math.sign(dz)
+                        tile = this.map.tile(nx, wz);
+                        if (canReach(this, tile)) {
+                            tiles.add(tile);
+                        }
+                    }
                 }
             }
         }
-
         for (let piece of this.map.pieces.values()) {
             tiles.delete(this.map.tile(piece.x, piece.z));
         }
         return tiles;
-
-
     }
 }
 
-export class Engineer extends Soldier {
+export class Engineer extends Humanoid {
     get type() {
         return 'Engineer'
     }
 
+    constructor(id, side, x, z, map, root) {
+        super(id, side, x, z, map, root);
+        this.event_handler['repair'] = (event) => this.repairEvent(event)
+    }
+
+    pieceInView(sameSide = false) {
+        let pieces = super.pieceInView(sameSide)
+        if (this.bullet > 0)
+            for (let i = this.x - 1; i <= this.x + 1; i++) {
+                for (let j = this.z - 1; j <= this.z + 1; j++) {
+                    let piece = this.map.piece(i, j)
+                    if (piece && piece.side === this.side && piece instanceof Tank)
+                        pieces.add(piece)
+                }
+            }
+        return pieces;
+    }
+
     shotEvent(event) {
-        this.object.lookAt(event.x, this.y / 2, event.z);
+        this.object.lookAt(event.x, this.y, event.z);
         for (let i = event.x - 1; i <= event.x + 1; i++) {
             for (let j = event.z - 1; j <= event.z + 1; j++) {
-                let enemy = this.map.piece(i, j);
-                if (enemy && enemy instanceof Soldier)
-                    this.map.kill(enemy)
+                this.map.damage(i, j, 0, 1, 1)
             }
         }
+        this.bullet--;
+        this.waiting = 1
+    }
+
+    repairEvent(event) {
+        this.object.lookAt(event.x, this.y, event.z);
+        let tank = this.map.piece(event.x, event.z);
+        if (tank && tank instanceof Tank)
+            tank.health += 9
         this.bullet--;
         this.waiting = 1
     }
@@ -737,15 +1033,14 @@ export class Engineer extends Soldier {
     }
 }
 
-export class Sniper extends Soldier {
+export class Sniper extends Humanoid {
     get type() {
         return 'Sniper'
     }
 
     get_view_range() {
-        return this.bullet > 0 ? 8 : 0;
+        return 7
     }
-
 
     get_strength() {
         return 1

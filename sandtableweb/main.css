@@ -55,11 +55,18 @@ body {
         padding: 1em;
 
         &.place {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             grid-gap: 1em;
 
-            &:hover img{
+            &:hover img {
                 height: 10em;
+            }
+
+            & > .total {
+                position: absolute;
+                right: 0;
+                top: 0;
+                padding: 0.5em;
             }
 
             & > div {
@@ -80,7 +87,13 @@ body {
 
                 & > img {
                     height: 5em;
+                    aspect-ratio: 1/1.5;
+                    object-fit: contain;
                     transition: height 0.5s ease;
+                }
+
+                & > span {
+                    font-weight: bolder;
                 }
             }
 
@@ -103,19 +116,7 @@ body {
         }
     }
 
-    &.end_turn > .end_turn {
-        display: grid;
-    }
-
-    &.waiting > .waiting {
-        display: grid;
-    }
-
-    &.place > .place {
-        display: grid;
-    }
-
-    &.soldier > .soldier {
+    &.waiting > .waiting, &.batch > .batch, &.place > .place, &.end_turn > .end_turn, &.soldier > .soldier {
         display: grid;
     }
 }

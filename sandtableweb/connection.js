@@ -10,9 +10,11 @@ import {onConnected, onUpdate} from "./main.js";
  * @property {int} z
  * @property {string} type
  * @property {string} side
- * @property {?string} [equip]
- * @property {int} [waiting]
+ * @property {int} waiting
+ * @property {string} [equip]
  * @property {int} [bullet]
+ * @property {int} [health]
+ * @property {int} [direction]
  */
 
 /**
@@ -25,6 +27,7 @@ import {onConnected, onUpdate} from "./main.js";
  * @property {int} [z]
  * @property {string} [soldier]
  * @property {int} [soldier_id]
+ * @property {int} [direction]
  */
 
 /**

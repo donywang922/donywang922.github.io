@@ -1,6 +1,6 @@
-import {Piece, Soldier, Assault, Board, Tile, Engineer, Flag, Sniper} from "./model.js";
+import {Piece, Soldier, Assault, Board, Tile, Engineer, Flag, Sniper, Tank} from "./model.js";
 import {getData, getName, getRoom, send} from "./connection.js";
-import {enginInit, enginStart, getBoard, getPieces, highlightTile} from "./engin.js";
+import {enginInit, enginStart, getBoard, getDirection, getPieces, highlightTile} from "./engin.js";
 
 
 /**@type {Board}*/
@@ -20,11 +20,16 @@ export function onConnected() {
 }
 
 function updateNumericUI() {
+    const data = getData();
+    const localName = getName();
+    // 确定对手名称
+    const enemyName = data.user1 === localName ? data.user2 : data.user1;
+    document.querySelector('.info h3').innerText = enemyName || "Waiting...";
     // 更新 force (兵力数值)
     document.querySelector('.force span.l').innerText = map.force_a
     document.querySelector('.force span.r').innerText = map.force_b;
 
-    let total_force = map.x_size === 32 ? 1.28 : 2.56
+    let total_force = 128 / 100
 
     // 更新 force 进度条
     document.querySelector('.force div.l').style.setProperty('--f', map.force_a / total_force);
@@ -83,46 +88,45 @@ function onBoardLoad() {
 
     let mySide = getName(); // 我方名称
     let flagPieces = Array.from(map.pieces.values()).filter(piece => piece instanceof Flag); // 只获取旗子
-    let emptyFlags = flagPieces.filter(flag => flag.side === ""); // 统计无主旗子
     let myFlags = flagPieces.filter(flag => flag.side === mySide); // 统计我方旗子
 
     if (flagPieces.length === 0) {
-        // **场上没有旗子，放置多个无主旗子，并随机选一个变成我方的**
-        let flagTiles = map.tiles.filter(tile => tile.r === 128 && tile.g === 128 && tile.b === 128);
         let counter = 1
-        flagTiles.forEach(tile => {
-            getData().actions.push({
-                id: 0,
-                type: 'place',
-                x: tile.x,
-                z: tile.z,
-                soldier: 'Flag',
-                soldier_id: counter,
-                side: ""
-            });
-            counter++
-        });
-
-        // **随机选一个旗子设为我方**
-        let randomIndex = Math.floor(Math.random() * flagTiles.length);
-        getData().actions[randomIndex].side = mySide;
-
+        for (let tile of map.tiles) {
+            if (tile.r === 128 && tile.g === 128) {
+                let side = ''
+                if (tile.b === 129) {
+                    side = mySide
+                } else if (tile.b === 130) {
+                    side = 'user2'
+                }
+                getData().actions.push({
+                    id: 0,
+                    type: 'place',
+                    x: tile.x,
+                    z: tile.z,
+                    soldier: 'Flag',
+                    soldier_id: counter,
+                    side: side
+                });
+                counter++
+            }
+        }
         onUpdate();
         send();
     } else if (myFlags.length === 0) {
-        // **场上有旗子但没有我方旗子，随机选一个无主旗子改为我方**
-        if (emptyFlags.length > 0) {
-            let randomFlag = emptyFlags[Math.floor(Math.random() * emptyFlags.length)];
-            getData().actions.push({
-                id: randomFlag.id,
-                type: 'occupy',
-                side: getName()
-            });
-            onUpdate()
-            send();
+        for (let flag of flagPieces) {
+            if (flag.side === 'user2') {
+                getData().actions.push({
+                    id: flag.id,
+                    type: 'occupy',
+                    side: getName()
+                });
+                onUpdate()
+                send();
+            }
         }
     }
-
     enginStart();
 }
 
@@ -167,7 +171,9 @@ function onAction(action) {
                 setAction('end_turn')
                 return;
             case 'place':
-                placePiece(action.soldier, action.soldier_id, action.side, action.x, action.z)
+                let piece = placePiece(action.soldier, action.soldier_id, action.side, action.x, action.z)
+                if (piece instanceof Tank)
+                    piece.direction = action.direction
                 return;
         }
     }
@@ -189,19 +195,20 @@ function forceRefresh() {
             tmp.z = piece.z
             tmp.side = piece.side
         }
+        tmp.waiting = piece.waiting
         if (piece.hasOwnProperty("equip")) tmp.equip = piece.equip
-        if (piece.hasOwnProperty('waiting')) tmp.waiting = piece.waiting
         if (piece.hasOwnProperty("bullet")) tmp.bullet = piece.bullet
+        if (piece.hasOwnProperty("health")) tmp.health = piece.health
+        if (piece.hasOwnProperty("direction")) tmp.direction = piece.direction
     }
     for (let [id, piece] of map.pieces) {
-        if (!tmp_set.has(id)) map.kill(piece)
+        if (!tmp_set.has(id)) piece.remove()
     }
     updateUI()
     action_index = 0
     onUpdate()
 }
 
-const assaultMax = 16, engineerMax = 8, sniperMax = 4
 
 /**
  * @param {string} type
@@ -209,6 +216,7 @@ const assaultMax = 16, engineerMax = 8, sniperMax = 4
  * @param {string} side
  * @param {int} x
  * @param {int} z
+ * @return {Piece}
  */
 function placePiece(type, id, side, x, z) {
     let piece;
@@ -225,6 +233,9 @@ function placePiece(type, id, side, x, z) {
         case 'Flag':
             piece = new Flag(id, side, x, z, map, getPieces());
             break;
+        case 'Tank':
+            piece = new Tank(id, side, x, z, map, getPieces());
+            break;
     }
 
     // 更新 .action .place 中 span 的文本
@@ -232,34 +243,42 @@ function placePiece(type, id, side, x, z) {
     return piece;
 }
 
+const total_pt = 56
+
 function updatePlaceCount() {
-    const [assaultCount, engineerCount, sniperCount] = countSoldier()
-    document.querySelector('[data-soldier="Assault"] span').innerText = `${assaultCount}/${assaultMax}`;
-    document.querySelector('[data-soldier="Engineer"] span').innerText = `${engineerCount}/${engineerMax}`;
-    document.querySelector('[data-soldier="Sniper"] span').innerText = `${sniperCount}/${sniperMax}`;
+    const [assaultCount, engineerCount, sniperCount, tankCount] = countSoldier()
+    document.querySelector('[data-soldier="Assault"] span').innerText = `${assaultCount} * 1pt`;
+    document.querySelector('[data-soldier="Engineer"] span').innerText = `${engineerCount} * 2pt`;
+    document.querySelector('[data-soldier="Sniper"] span').innerText = `${sniperCount} * 4pt`;
+    document.querySelector('[data-soldier="Tank"] span').innerText = `${tankCount} * 8pt`;
+    let pt = assaultCount + engineerCount * 2 + sniperCount * 3 + tankCount * 8
+    document.querySelector('.place>.total').innerText = `${pt} / ${total_pt} pt`;
 }
 
 function countSoldier() {
     const assaultCount = Array.from(map.pieces.values()).filter(p => (p.side === getName() && p instanceof Assault)).length;
     const engineerCount = Array.from(map.pieces.values()).filter(p => (p.side === getName() && p instanceof Engineer)).length;
     const sniperCount = Array.from(map.pieces.values()).filter(p => (p.side === getName() && p instanceof Sniper)).length;
-    return [assaultCount, engineerCount, sniperCount]
+    const tankCount = Array.from(map.pieces.values()).filter(p => (p.side === getName() && p instanceof Tank)).length;
+    return [assaultCount, engineerCount, sniperCount, tankCount]
 }
 
 
 function canPlace() {
-    const [assaultCount, engineerCount, sniperCount] = countSoldier()
+    const [assaultCount, engineerCount, sniperCount, tankCount] = countSoldier()
+    let pt = assaultCount + engineerCount * 2 + sniperCount * 3 + tankCount * 8
     switch (current_soldier_type) {
         case 'Assault':
-            return assaultCount < assaultMax;
+            return pt + 1 <= 56;
         case 'Engineer':
-            return engineerCount < engineerMax;
+            return pt + 2 <= 56;
         case 'Sniper':
-            return sniperCount < sniperMax;
+            return pt + 4 <= 56;
+        case 'Tank':
+            return pt + 8 <= 56;
     }
     return false;
 }
-
 
 function tick() {
     map.pieces.forEach(piece => {
@@ -287,18 +306,37 @@ export function onTileClick(tile) {
         return
     }
     if (current_action === 'place') {
+        if (!highlighted_tiles.has(tile)) {
+            highlighted_tiles.clear()
+            highlightTile(highlighted_tiles)
+            setAction('end_turn')
+            return;
+        }
         if (current_soldier_type === '') return;
-        if (!highlighted_tiles.has(tile)) return;
         if (!canPlace()) return;
-        getData().actions.push({
-            id: 0,
-            type: 'place',
-            x: tile.x,
-            z: tile.z,
-            soldier: current_soldier_type,
-            soldier_id: Date.now(),
-            side: getName()
-        })
+        if (current_soldier_type === 'Tank') {
+            if (!Tank.canPlaceTank(tile.x, tile.z, map)) return;
+            getData().actions.push({
+                id: 0,
+                type: 'place',
+                x: tile.x,
+                z: tile.z,
+                soldier: current_soldier_type,
+                soldier_id: Date.now(),
+                side: getName(),
+                direction: getDirection()
+            })
+        } else {
+            getData().actions.push({
+                id: 0,
+                type: 'place',
+                x: tile.x,
+                z: tile.z,
+                soldier: current_soldier_type,
+                soldier_id: Date.now(),
+                side: getName()
+            })
+        }
         onUpdate()
         send()
         return;
@@ -351,8 +389,10 @@ export function onTileClick(tile) {
         let tmp = selected_pieces.values().next().value;
         deselectPiece(tmp)
     }
-
-    addAllTileToHighlight(map.spawnable_tiles())
+    if (current_soldier_type === 'Tank')
+        addAllTileToHighlight(map.spawnable_tiles(true))
+    else
+        addAllTileToHighlight(map.spawnable_tiles())
     highlightTile(highlighted_tiles)
     setAction('place')
 }
@@ -363,23 +403,33 @@ export function onTileClick(tile) {
 export function onPieceClick(piece) {
     if (current_action === 'waiting') return;
     highlighted_tiles.clear()
-
     if (highlighted_enemy.has(piece)) {
         /**@type {Soldier}*/
         let tmp = selected_pieces.values().next().value;
-        getData().actions.push({
-            id: tmp.id,
-            type: 'shot',
-            x: piece.x,
-            z: piece.z,
-        });
+        if (piece.side === tmp.side && piece instanceof Tank && tmp instanceof Engineer) {
+            getData().actions.push({
+                id: tmp.id,
+                type: 'repair',
+                x: piece.x,
+                z: piece.z,
+            });
+        } else {
+            getData().actions.push({
+                id: tmp.id,
+                type: 'shot',
+                x: piece.x,
+                z: piece.z,
+            });
+        }
         onUpdate();
         send();
         highlighted_tiles.clear()
         highlightTile(highlighted_tiles)
-        if (tmp.bullet === 0) {
-            deselectPiece(tmp)
+        deselectPiece(tmp)
+        if (tmp.bullet <= 0) {
             setAction('end_turn')
+        } else {
+            selectPiece(tmp)
         }
         return;
     }
@@ -429,6 +479,9 @@ function findNearestTile(target, moveableTiles) {
     return nearestTile;
 }
 
+/**
+ * @param {Soldier} piece
+ */
 function selectPiece(piece) {
     selected_pieces.add(piece)
     piece.set_highlight(true)
@@ -443,6 +496,9 @@ function selectPiece(piece) {
     highlightTile(highlighted_tiles)
 }
 
+/**
+ * @param {Soldier} piece
+ */
 function deselectPiece(piece) {
     if (!selected_pieces.has(piece)) return
     selected_pieces.delete(piece)
@@ -522,6 +578,12 @@ function selectSoldierType(card) {
     })
     card.classList.add('select')
     current_soldier_type = card.dataset['soldier']
+    highlighted_tiles.clear()
+    if (current_soldier_type === 'Tank')
+        addAllTileToHighlight(map.spawnable_tiles(true))
+    else
+        addAllTileToHighlight(map.spawnable_tiles())
+    highlightTile(highlighted_tiles)
 }
 
 choices.forEach(choice => {
