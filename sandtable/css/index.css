@@ -1,0 +1,104 @@
+.banner {
+    height: 41vw;
+    min-height: 20em;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    img, div {
+        position: absolute;
+        max-width: initial;
+        height: 100%;
+    }
+
+    img:nth-child(1) {
+        width: 120%;
+        left: calc(0% - 20% * var(--ofs));
+    }
+
+    img:nth-child(2) {
+        width: 110%;
+        left: calc(0% - 10% * var(--ofs));
+    }
+
+    img:nth-child(3) {
+        width: 110%;
+        left: calc(-10% + 5% * var(--ofs));
+    }
+
+    img:nth-child(4) {
+        width: 130%;
+        left: calc(-30% + 15% * var(--ofs));
+    }
+
+    div {
+        width: min(calc(100% - 6rem), var(--container_w) - 5rem);
+        top: calc((1 - var(--bgo)) * 10vw + 60px + 10vw);
+        overflow: hidden;
+        font-weight: bolder;
+        font-size: x-large;
+        overflow-wrap: break-word;
+        white-space: wrap;
+        color: var(--text_r);
+
+        button {
+            margin-top: 1em;
+        }
+    }
+}
+
+body > .container {
+    margin-top: 1em;
+    font-weight: bold;
+
+    h1 {
+        font-size: xxx-large;
+        border-image: linear-gradient(to right, var(--theme), #0000) 1;
+    }
+
+    h2 {
+        border-image: linear-gradient(to right, var(--color_c), #0000) 1;
+    }
+
+    h1, h2 {
+        margin-bottom: 1rem;
+        border-bottom: 2px solid;
+    }
+
+    .pillars {
+        padding: 0 2em;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: calc(var(--gap) * 2);
+
+        div {
+            background: var(--color_a);
+            padding: 1em;
+            border-radius: 1em;
+            box-shadow: var(--color_b) 2px 2px 3px 1px;
+        }
+    }
+
+    .inspiration {
+        img {
+            height: 24em;
+            width: 100%;
+            border-radius: 2em;
+            border: 10px solid var(--color_a);
+            box-shadow: var(--color_b) 2px 2px 3px 1px;
+        }
+    }
+
+    div {
+        margin-bottom: 2em;
+    }
+}
+
+@media screen and (max-width: 60em) {
+    .banner div {
+        font-size: large;
+    }
+}

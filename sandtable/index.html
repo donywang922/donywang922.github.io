@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>SandTable!!!</title>
+    <link rel="icon" href="imgs/logo.png" crossorigin="anonymous">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/page.css">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/index.css">
+</head>
+<body style="--bgo:0">
+<header>
+    <div class="container">
+        <input type="checkbox" id="nav">
+        <div class="logo">
+            <a href="index.html">
+                <img class="ico" src="imgs/logo.png" alt="logo">
+            </a>
+            <span class="text">SandTable!!!</span>
+        </div>
+        <div class="tab hd40">
+            <a href="index.html">HOME</a>
+            <a href="rule.html">RULE</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="files.html">FILES</a>
+            <a href="/sandtableweb/index.html">TRY ONLINE</a>
+        </div>
+        <div class="ff je f40 menu_btn">
+            <label for="nav">
+                <img src="imgs/bars-solid.svg" alt="nav">
+            </label>
+        </div>
+        <div class="menu f40">
+            <a href="index.html">HOME</a>
+            <a href="rule.html">RULE</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="files.html">FILES</a>
+            <a href="/sandtableweb/index.html">TRY ONLINE</a>
+        </div>
+    </div>
+</header>
+<div class="banner" style="--ofs:0.5">
+    <img src="imgs/banner1.png" alt="">
+    <img src="imgs/banner2.png" alt="">
+    <img src="imgs/banner4.png" alt="">
+    <img src="imgs/banner3.png" alt="">
+    <div>
+        <p>this is the place for core statement</p>
+        <p>But since we haven't yet, I will to put some random stuff in here as a placeholder.</p>
+        <button>Make A Physical Copy</button>
+    </div>
+</div>
+<div class="container">
+    <div class="lr55">
+        <div>
+            <h1>backstory!!</h1>
+            <p>Thematic backstory here (characters, storyworld, premise of the action etc.).</p>
+            <p>A board game trailer (search for examples on YouTube to emulated), under 3 minutes long. The video can be
+                as simple as a TikTok style video, and doesn't need to be highly produced. Do the best you can with your
+                team's video production skills.</p>
+        </div>
+
+        <div>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/Omtc88v0DWo?si=FITk57xi6L0gG6ke"
+                    title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+    <div>
+        <h1>three game pillars!!</h1>
+        <div class="pillars">
+            <div>
+                <h2>WHAT</h2>
+                <p>A statement of your three game pillars (for example: What, How, Why), one sentence per pillar.</p>
+            </div>
+            <div>
+                <h2>HOW</h2>
+                <p>A statement of your three game pillars (for example: What, How, Why), one sentence per pillar.</p>
+            </div>
+            <div>
+                <h2>WHY</h2>
+                <p>A statement of your three game pillars (for example: What, How, Why), one sentence per pillar.</p>
+            </div>
+        </div>
+    </div>
+    <div class="lr55 inspiration">
+        <img src="imgs/inspiration.png" alt="">
+        <div>
+            <h1>inspiration!!</h1>
+            <p>not sure what it looks like</p>
+            <p>placeholder</p>
+        </div>
+
+    </div>
+</div>
+<footer>
+    <div class="container f">
+        <div class="ff">
+            <h2>SandTable!!!</h2>
+            <p>Simon Fraser University</p>
+            <p>Spring 2025 - IAT 210</p>
+            <p>Dr. Michael Filimowicz</p>
+            <p>Lillian Herbst, James Cam, Khiem Dinh Can, Nikola Kazulin, Dony Wang</p>
+        </div>
+        <img src="imgs/logo.png" alt="logo">
+    </div>
+</footer>
+</body>
+<script>
+    const header = document.querySelector("body")
+    let ofs = 0.5
+    let mx = -1
+
+    function set_header() {
+        let h = 280 - window.scrollY
+        h /= 280
+        h = h < 0 ? 0 : h;
+        h = h > 1 ? 1 : h;
+        header.style.setProperty('--bgo', `${h}`)
+    }
+
+    const banner = document.querySelector(".banner");
+
+    banner.addEventListener("mousemove", (event) => {
+        const rect = banner.getBoundingClientRect();
+        const mouseX = event.clientX - mx; // 鼠标相对于 banner 左侧的距离
+        ofs = mouseX / rect.width / 2 + 0.5; // 归一化到 0-1 范围
+    });
+
+
+    banner.addEventListener("mouseenter", (event) => {
+        mx = event.clientX
+    })
+    banner.addEventListener("mouseleave", () => {
+        mx = -1
+    });
+
+    function anim() {
+        if (mx === -1 && Math.abs(ofs - 0.5) > 0.03) {
+            if (ofs > 0.5) ofs -= 0.03
+            else ofs += 0.03
+        }
+        banner.style.setProperty("--ofs", ofs.toFixed(2)); // 保留两位小数
+        requestAnimationFrame(anim)
+    }
+
+    requestAnimationFrame(anim)
+
+    window.addEventListener('scroll', set_header);
+    set_header()
+</script>
+</html>

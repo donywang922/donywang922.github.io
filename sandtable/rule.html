@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>SandTable!!!</title>
+    <link rel="icon" href="imgs/logo.png" crossorigin="anonymous">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/page.css">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/rule.css">
+</head>
+<body style="--bgo:0">
+<header>
+    <div class="container">
+        <input type="checkbox" id="nav">
+        <div class="logo">
+            <a href="index.html">
+                <img class="ico" src="imgs/logo.png" alt="logo">
+            </a>
+            <span class="text">SandTable!!!</span>
+        </div>
+        <div class="tab hd40">
+            <a href="index.html">HOME</a>
+            <a href="rule.html">RULE</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="files.html">FILES</a>
+            <a href="/sandtableweb/index.html">TRY ONLINE</a>
+        </div>
+        <div class="ff je f40 menu_btn">
+            <label for="nav">
+                <img src="imgs/bars-solid.svg" alt="nav">
+            </label>
+        </div>
+        <div class="menu f40">
+            <a href="index.html">HOME</a>
+            <a href="rule.html">RULE</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="files.html">FILES</a>
+            <a href="/sandtableweb/index.html">TRY ONLINE</a>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <h1>Rules</h1>
+    <i>THESE RULES ARE SUBJECTED TO BE CHANGED, IF CHANGED PLEASE LOG WHAT WAS CHANGED</i>
+    <h2>Board Setup</h2>
+    <p>Initiative roll to determine turn: D6- highest goes first</p>
+    <p>Board is of size “25 x 25”</p>
+    <p>There are 2 teams, which are initially put at 2 corners of the board.</p>
+    <p>Each corner is a square of size “3 x 3”</p>
+    <p>The middle zone is of size “3 x 3” (considering adding 2 more zones at 2 corners)</p>
+    <p>There are cells marked as “obstacle”, which units can not move to there but can use it as hiding covers</p>
+    <h2>Units</h2>
+    <p>There are 4 types of units: Tank, Mechanic, Sniper, and Assault. Currently, there are no card, and variants of a
+        unit types. For each team, there is 3 Assault units, 1 Sniper unit, 1 Mechanic unit, and 1 Tank unit.
+    </p>
+    <div class="unit">
+        <img src="imgs/sniper.png" alt="">
+        <img src="imgs/sniper_m.png" alt="">
+        <div>
+            <h3>Sniper/Scout</h3>
+            <ul>
+                <li>Total of one health point</li>
+                <li>Ability to move ‘2’ tiles</li>
+                <li>Ability to shoot at a range of ‘8’ tiles - all directions</li>
+                <li>There are 1 scout units for each team.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="unit">
+        <img src="imgs/assault.png" alt="">
+        <img src="imgs/assault_m.png" alt="">
+        <div>
+            <h3>Assault</h3>
+            <ul>
+                <li> Total of one health point</li>
+                <li> Ability to move ‘2’ tiles</li>
+                <li> Ability to shoot at a range of ‘4’ tiles and can shoot 2 times per turn</li>
+                <li> There are 3 assault units for each team.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="unit">
+        <img src="imgs/engineer.png" alt="">
+        <img src="imgs/engineer_m.png" alt="">
+        <div>
+            <h3>Engineer</h3>
+            <ul>
+                <li>Total of one health point</li>
+                <li>Ability to move ‘2’ tiles</li>
+                <li>Ability to shoot a range of ‘4’ tiles.</li>
+                <li>There is 1 engineer unit for each team.</li>
+                <li>Either able to fix the tank unit for a fixed number of times or do one of following action each
+                    turn:
+                    fix,
+                    move,
+                    and attack
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="unit">
+        <img src="imgs/tank.png" alt="">
+        <img src="imgs/tank_m.png" alt="">
+        <div>
+            <h3>Tank</h3>
+            <ul>
+                <li>Total of two health points</li>
+                <li>Ability to move ‘2’ tile in cardinal directions (if we move diagonal then we move to the grid that
+                    diagonal
+                    to the corner of the current position of the tank)
+                </li>
+                <li>Ability to shoot a ‘2x6’ beam in the current direction, and turning to a new direction cost a
+                    turn.
+                </li>
+                <li>Ability to repair a tank in a range of ‘1’ tiles for one health point.</li>
+                <li>There is 1 tank unit for each team.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Gameplay</h2>
+    <p>A D6 is rolled to determine number of units a player is able to move in a turn. *</p>
+    <p>In a turn, a unit can move to a new position and begin attack immediately</p>
+    <p>Units can move and shoot in eight directions, the cardinal directions and diagonals.</p>
+    <p>Units <b>have to</b> move number of units in rule.</p>
+    <h2>Winning condition</h2>
+    <p>There are two modes of winning:</p>
+    <ul>
+        <li>Either capturing the middle zone for one full turn i.e. having units enter the turns, having these units
+            survive
+            the next turn of the opponent, and win , (considering capturing 2 out of 3 zones to win, you conquer an
+            enemy
+            occupied zone for having a unit there in one turn, and to win you need to captured 2 zone simultaneously)
+        </li>
+        <li>or eliminating all other player’s units</li>
+    </ul>
+    <h2>Power Up</h2>
+    <p>I suggest 2 types of power up: putting in the 2 unoccupied corners of the board:</p>
+    <ul>
+        <li>Type 1: Choose any unit of the opponent and deal 1 damage</li>
+        <li>Type 2: Revive one lost unit, or add one random unit to your starting zone</li>
+    </ul>
+</div>
+<footer>
+    <div class="container f">
+        <div class="ff">
+            <h2>SandTable!!!</h2>
+            <p>Simon Fraser University</p>
+            <p>Spring 2025 - IAT 210</p>
+            <p>Dr. Michael Filimowicz</p>
+            <p>Lillian Herbst, James Cam, Khiem Dinh Can, Nikola Kazulin, Dony Wang</p>
+        </div>
+        <img src="imgs/logo.png" alt="logo">
+    </div>
+</footer>
+</body>
+<script>
+</script>
+</html>
