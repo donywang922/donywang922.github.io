@@ -13,9 +13,8 @@
         grid-template-columns: 20em 1fr;
         margin-bottom: 1em;
         grid-gap: 1em;
-        position: relative;
 
-        img:nth-child(1) {
+        & > img {
             aspect-ratio: 3/4;
             width: 100%;
             object-fit: contain;
@@ -23,20 +22,29 @@
             border: 5px solid var(--color_a);
         }
 
-        img:nth-child(2) {
-            position: absolute;
-            padding-left: 20em;
-            width: 100%;
-            z-index: 0;
-            opacity: 0.5;
-        }
 
         div {
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             padding: 1em 0;
-            z-index: 10;
+            position: relative;
+
+            img {
+                position: absolute;
+                width: 100%;
+                z-index: 0;
+                opacity: 0.5;
+            }
+            *:not(img){
+                z-index: 10;
+            }
         }
+    }
+}
+
+@media screen and (max-width: 60em) {
+    .unit {
+        grid-template-columns: 1fr !important;
     }
 }

@@ -2,15 +2,24 @@
     height: 41vw;
     min-height: 20em;
     width: 100%;
-    overflow: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    img, div {
+    .banner_imgs {
+        overflow: hidden;
         position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+    img, div {
         max-width: initial;
+    }
+
+    img {
+        position: absolute;
         height: 100%;
     }
 
@@ -34,12 +43,15 @@
         left: calc(-30% + 15% * var(--ofs));
     }
 
-    div {
+    .text {
+        position: sticky;
         width: min(calc(100% - 6rem), var(--container_w) - 5rem);
-        top: calc((1 - var(--bgo)) * 10vw + 60px + 10vw);
+        top: calc(10vw + (60px * var(--bgo)));
+        margin-bottom: var(--gap);
         overflow: hidden;
         font-weight: bolder;
         font-size: x-large;
+        text-shadow: #0008 2px 2px;
         overflow-wrap: break-word;
         white-space: wrap;
         color: var(--text_r);
@@ -51,25 +63,16 @@
 }
 
 body > .container {
-    margin-top: 1em;
+    margin-top: 0;
     font-weight: bold;
 
-    h1 {
-        font-size: xxx-large;
-        border-image: linear-gradient(to right, var(--theme), #0000) 1;
-    }
-
-    h2 {
-        border-image: linear-gradient(to right, var(--color_c), #0000) 1;
-    }
-
-    h1, h2 {
-        margin-bottom: 1rem;
-        border-bottom: 2px solid;
+    .backstory iframe {
+        position: sticky;
+        top: 6em;
+        margin-top: 4em;
     }
 
     .pillars {
-        padding: 0 2em;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-gap: calc(var(--gap) * 2);
@@ -92,13 +95,25 @@ body > .container {
         }
     }
 
-    div {
+    & > div {
         margin-bottom: 2em;
     }
 }
 
 @media screen and (max-width: 60em) {
-    .banner div {
-        font-size: large;
+    .banner .text {
+        font-size: medium;
+    }
+
+    .backstory iframe {
+        margin-top: 0 !important;
+    }
+
+    .pillars {
+        grid-template-columns: 1fr !important;
+    }
+
+    h1 {
+        font-size: xx-large !important;
     }
 }

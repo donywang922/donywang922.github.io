@@ -6,6 +6,7 @@
     <title>Warfare Woods!!!</title>
     <link rel="icon" href="imgs/logo.png" crossorigin="anonymous">
     <link rel="stylesheet" crossorigin="anonymous" href="css/page.css">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/gallery.css">
 </head>
 <body style="--bgo:0">
 <header>
@@ -39,6 +40,46 @@
     </div>
 </header>
 <div class="container">
+    <div class="category">
+        <h1>Pieces</h1>
+        <p>All pieces in Warfare Woods!</p>
+    </div>
+    <div class="imgs">
+        <img src="imgs/gallery/p1.jpg" alt="">
+        <img src="imgs/gallery/p2.jpg" alt="">
+        <div></div>
+    </div>
+    <div class="category">
+        <h1>Original Artbook</h1>
+        <p>Plan and Process</p>
+    </div>
+    <div class="imgs">
+        <img src="imgs/gallery/a1.png" alt="">
+        <img src="imgs/gallery/a2.png" alt="">
+        <img src="imgs/gallery/a3.png" alt="">
+        <img src="imgs/gallery/a4.png" alt="">
+        <img src="imgs/gallery/a5.jpg" alt="">
+        <img src="imgs/gallery/a6.png" alt="">
+        <img src="imgs/gallery/a7.png" alt="">
+        <img src="imgs/gallery/a8.png" alt="">
+        <img src="imgs/gallery/a9.png" alt="">
+        <img src="imgs/gallery/a10.png" alt="">
+        <img src="imgs/gallery/a11.png" alt="">
+        <img src="imgs/gallery/a12.png" alt="">
+        <img src="imgs/gallery/a13.jpg" alt="">
+        <img src="imgs/gallery/a14.jpg" alt="">
+        <div></div>
+    </div>
+    <div class="category">
+        <h1>Game Play</h1>
+        <p>Best Team!</p>
+    </div>
+    <div class="imgs">
+
+    </div>
+    <dialog id="img_dia">
+        <img src="imgs/gallery/a14.jpg" alt="">
+    </dialog>
 </div>
 <footer>
     <div class="container f">
@@ -54,5 +95,22 @@
 </footer>
 </body>
 <script>
+    const img_dia = document.querySelector("#img_dia")
+    img_dia.addEventListener('click', (e) => {
+        if (e.target === img_dia) {
+            img_dia.close()
+        }
+    })
+
+    function show_img(img) {
+        img_dia.querySelector('img').src = img.src
+        img_dia.showModal()
+    }
+
+    for (let img of document.querySelectorAll('.imgs img')) {
+        img.addEventListener('click', () => {
+            show_img(img)
+        })
+    }
 </script>
 </html>

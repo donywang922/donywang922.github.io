@@ -40,26 +40,40 @@
     </div>
 </header>
 <div class="banner" style="--ofs:0.5">
-    <img src="imgs/banner1.png" alt="">
-    <img src="imgs/banner2.png" alt="">
-    <img src="imgs/banner4.png" alt="">
-    <img src="imgs/banner3.png" alt="">
-    <div>
+    <div class="banner_imgs">
+        <img src="imgs/banner1.png" alt="">
+        <img src="imgs/banner2.png" alt="">
+        <img src="imgs/banner4.png" alt="">
+        <img src="imgs/banner3.png" alt="">
+    </div>
+    <div class="text">
         <p>Warfare Wood is an intense and action-packed competitive strategy game where 2 players battle each other and
             conquer the battle field. <br>
             Players must outpace, outfight their opponent to either capture enough territories
             or eliminate all the adversary forces.</p>
-        <button>Make A Physical Copy</button>
+        <a href="files.html"><button>Make A Physical Copy</button></a>
     </div>
 </div>
 <div class="container">
-    <div class="lr55">
+    <div class="lr55 backstory">
         <div>
             <h1>backstory!!</h1>
-            <p>Thematic backstory here (characters, storyworld, premise of the action etc.).</p>
-            <p>A board game trailer (search for examples on YouTube to emulated), under 3 minutes long. The video can be
-                as simple as a TikTok style video, and doesn't need to be highly produced. Do the best you can with your
-                team's video production skills.</p>
+            <p>Winter is coming to the Warfare Woods, and the creatures of the forest must prepare. Perchance, to
+                survive one must acquire resources. The animals of the woods leave their dens and nests, heading out to
+                look for food. Forming eclectic groups of various species, they help each other in their search for
+                survival. Eventually, a group discovers stashes of acorns and berries in the woods, but they aren't the
+                only ones to find this.
+                <br><br>
+                Grabbing their favourite firearms, the groups form into armies and begin their campaigns of destruction.
+                Lobbing rocket logs, firing their conifer rifles, and driving their stoneskin tanks they fight over
+                these caches of food. Each animal has a role to play in the conflict. The flock of geese fly towards the
+                enemy, submachineguns in hand (or rather wing) to secure their territory. The tall moose get an ample
+                view of the forest, perfect for their sniper rifles. The ingenuitive beaver fires their rocket launchers
+                and helps support the family of mice in their tank.
+                <br><br>
+                Each with their own styles of movement, attacks, and special abilities, they set off together to claim
+                the forest and its resources so they may survive the coming winter and be the victors of the Warfare
+                Woods.</p>
         </div>
 
         <div>
@@ -146,9 +160,13 @@
     });
 
     function anim() {
-        if (mx === -1 && Math.abs(ofs - 0.5) > 0.03) {
-            if (ofs > 0.5) ofs -= 0.03
-            else ofs += 0.03
+        if (mx === -1) {
+            if (Math.abs(ofs - 0.5) > 0.03) {
+                if (ofs > 0.5) ofs -= 0.03
+                else ofs += 0.03
+            } else {
+                ofs = 0.5
+            }
         }
         banner.style.setProperty("--ofs", ofs.toFixed(2)); // 保留两位小数
         requestAnimationFrame(anim)

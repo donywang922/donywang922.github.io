@@ -78,7 +78,7 @@ body {
 
 
     & > .container {
-        margin: 90px 0 1em 0;
+        margin: 60px 0 1em 0;
         padding: 2em;
         border-radius: 0.5em;
         flex-grow: 1;
@@ -120,7 +120,7 @@ header {
         & > .text {
             padding: 1% 2rem;
             font-weight: bolder;
-            font-size: calc(var(--bgo) * 20px + 20px);
+            font-size: min(calc(var(--bgo) * 20px + 20px), 5vw);
             color: var(--theme);
         }
     }
@@ -301,6 +301,25 @@ textarea {
     max-height: 10em;
     font-size: 1.2em;
     max-width: 100%;
+}
+
+iframe {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+h1 {
+    font-size: xxx-large;
+    border-image: linear-gradient(to right, var(--theme), #0000) 1;
+}
+
+h2 {
+    border-image: linear-gradient(to right, var(--color_c), #0000) 1;
+}
+
+h1, h2 {
+    margin-bottom: 1rem;
+    border-bottom: 2px solid;
 }
 
 .container {
@@ -980,8 +999,9 @@ textarea {
         display: flex;
     }
 
+
     body > .container {
-        padding: 0.5em;
+        padding: 1em;
         margin-top: calc(90px + 0.5em);
     }
 }
@@ -990,5 +1010,9 @@ textarea {
 @media screen and (max-width: 50em) {
     .hd50 {
         display: none;
+    }
+
+    .lr55, .lr37, .lr73, .g3 {
+        grid-template-columns: 1fr;
     }
 }
