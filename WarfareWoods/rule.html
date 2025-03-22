@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Warfare Woods!!!</title>
+    <link rel="icon" href="imgs/icon.png" crossorigin="anonymous">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/page.css">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/rule.css">
+</head>
+<body style="--bgo:0">
+<header>
+    <div class="container">
+        <input type="checkbox" id="nav">
+        <div class="logo">
+            <a href="index.html">
+                <img class="ico" src="imgs/logo.png" alt="logo">
+            </a>
+            <span class="text">Warfare Woods!!!</span>
+        </div>
+        <div class="tab hd40">
+            <a href="index.html">HOME</a>
+            <a href="rule.html">RULE</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="files.html">FILES</a>
+            <a href="/WarfareWoodsWeb/index.html">TRY ONLINE</a>
+        </div>
+        <div class="ff je f40 menu_btn">
+            <label for="nav">
+                <img src="imgs/bars-solid.svg" alt="nav">
+            </label>
+        </div>
+        <div class="menu f40">
+            <a href="index.html">HOME</a>
+            <a href="rule.html">RULE</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="files.html">FILES</a>
+            <a href="/WarfareWoodsWeb/index.html">TRY ONLINE</a>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <h1>Rules</h1>
+    <h2>Pieces</h2>
+    <ul>
+        <li>1 Board (25x25in.)</li>
+        <li>D8 dice</li>
+        <li>8 Unit pieces (5 assault troopers, one engineer, one sniper, one tank)</li>
+    </ul>
+    <h2>Board Setup</h2>
+    <div class="lr37">
+        <img src="imgs/gallery/p2.webp" alt="">
+        <div>
+            <p>Two corners on either of the board are delegated as "starting zones" for the two players.</p>
+            <p><b>Each starting zone</b> is a square of size "4 x 4", where each player can initially set-up their units
+                in any position desired, as long as all of the units fit within the zone.
+            </p>
+            <p>There are 3 <b>capturable zones</b>, which are of size "3 x 3", one at the center of the board, the
+                other two are at the 2 corners that are not starting corners.
+            </p>
+            <p>There are cells marked as <b>"obstacles"</b>, which units cannot move or shoot through.</p>
+        </div>
+    </div>
+    <h2>Unit Setup</h2>
+    <p>There are 4 types of units: Tank, Mechanic, Sniper, and Assault. For each team, there are 5 Assault units, 1
+        Sniper unit, 1 Mechanic unit, and 1 Tank unit.
+    </p>
+    <p>Units may be arranged in any order desired at the start of the game, as long as they fit within the 4x4 starting
+        zone.
+    </p>
+    <div class="unit">
+        <img src="imgs/sniper.png" alt="">
+        <div>
+            <img src="imgs/sniper_m.png" alt="">
+            <h3>Sniper</h3>
+            <ul>
+                <li>1 health point.</li>
+                <li>Can move 2 tiles, each tile the unit can move either up - down - left - right.</li>
+                <li>Shooting range of 8 tiles in eight cardinal (and intercardinal) directions.</li>
+                <li>Can only shoot once each turn, each shot deals 1 damage (taking away the shot enemy 1 health
+                    point)
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="unit">
+        <img src="imgs/assault.png" alt="">
+        <div>
+            <img src="imgs/assault_m.png" alt="">
+            <h3>Assault</h3>
+            <ul>
+                <li>1 health point.</li>
+                <li>Can move 2 tiles (similar to Sniper).</li>
+                <li>Shooting range of 4 tiles, which means the Assault unit can shoot at any opponent unit if there is a
+                    path of length 4 tiles or shorter (i.e. 3 tiles, 2 tiles, …) between the opponent unit and the
+                    Assault unit.
+                </li>
+                <li>Can shoot twice each turn, each shot must be landed on a different opponent unit. Each shot deals 1
+                    damage.
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="unit">
+        <img src="imgs/engineer.png" alt="">
+        <div>
+            <img src="imgs/engineer_m.png" alt="">
+            <h3>Engineer</h3>
+            <ul>
+                <li>1 health point.</li>
+                <li>Can move 2 tiles (similar to Sniper).</li>
+                <li>Shooting range of 4 tiles or shorter (similar to Assault)</li>
+                <li>Can shoot once each turn. Each shot deals 1 damage.</li>
+                <li>Has the ability to repair the tank unit for 1 health point if in direct contact to tank once each
+                    turn, at a cost of shooting in that turn.
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="unit">
+        <img src="imgs/tank.png" alt="">
+        <div>
+            <img src="imgs/tank_m.png" alt="">
+            <h3>Tank</h3>
+            <ul>
+                <li>2 health points.</li>
+                <li>Can move 2 squares along or reverse the current direction, or alternatively turn (to the right, to
+                    the left, or backward to the current direction) and move one square.
+                </li>
+                <li>Ability to shoot a ‘2x6’ beam in the current direction, and turning to a new direction cost a
+                    turn.
+                </li>
+                <li>Has the ability to shoot a ‘2x6’ beam in the current direction, dealing 1 damage to all enemies
+                    caught in the beam.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Beginning of Game</h2>
+    <p>Each player chooses a side to start on, and sets up their units accordingly in their zone.</p>
+    <p>A D8 is rolled to determine which player goes first, higher number begins the game.</p>
+
+    <h2>Gameplay mechanic</h2>
+    <p>A D8 is rolled to determine number of units a player is able to move in a turn. If the rolled number is higher
+        than the number of units, then move all units.
+    </p>
+    <p>In a turn, a unit can move to a new position and begin attack immediately.</p>
+    <p>Units can move up to their allowed tiles per turn, but may move less if desired.</p>
+    <h3>Cover mechanic</h3>
+    <p> For a unit U (which is either Sniper, Assault, Tank, or Mechanic) and an opponent unit O lies within U’s
+        shooting range, if the straight line between the square of U and square of O crosses an obstacle’s
+        square, then U can NOT shoot at O.
+    </p>
+
+    <h2>Winning condition</h2>
+    <p>There are two modes of winning:</p>
+    <ul>
+        <li>Capturing at least two of the capture zones for at least one turn. This is fulfilled by having at least one
+            unit in the capture zone for a full turn, with no opposing units also present in the zone.
+        </li>
+        <li>Eliminating all the other player’s units.</li>
+    </ul>
+    <h2>Power Up</h2>
+    <p>There are 2 power ups on the board. The player can move over the power up to pick it up, and choose an ability,
+        either: </p>
+    <ul>
+        <li>Type 1 allows the player to choose any unit from the opposing team and deal one damage to it.</li>
+        <li>Type 2 allows the player to revive one lost unit, the revived unit is placed back at the player’s starting
+            zone.
+        </li>
+    </ul>
+    <p>Once a power up is picked up, it can be stored and used by a player any time throughout the game. Once it is used
+        once, it is to be removed from the game and cannot be used again.</p>
+
+    <h2>Flowchart</h2>
+    <img src="imgs/IAT%20210%20Flowchart.svg" alt="">
+    <img src="imgs/Iat%20210%20pt2.svg" alt="">
+
+    <h2>Typical Game Length</h2>
+    <p>In our play tests, each battle typically took 30 minutes, but a very careful play through could take 1-2
+        hours.</p>
+
+    <h2>Trade-offs</h2>
+    <p>Some trade-offs found in gameplay was the position of tanks vs the obstacles present on the board, as the
+        limited movement of the tank and long barriers separating areas of the board caused you to usually be locked to
+        your direction and your initial movements to be critical in the strategy you were implementing. Additionally,
+        snipers needed to be very positioned deliberately on the board as their attack range and angle was
+        different from other units, making their long range a trade-off with their limited angle of range. A major
+        dilemma that was found was the blocking of shots from the barriers on the board, as it was not always clear when
+        the unit was behind or not behind a barrier and therefore made aiming a difficulty and a dilemma between players
+    </p>
+
+    <h2>Game Dynamics</h2>
+    <p>
+        Throughout playtesting the game, several successful strategies emerged. Here are some of the
+        more effective strategies which came up throughout the play test. <br>
+        One strategy involved two simple ideas: send the tank down to the side zone with the log, and
+        send all the geese/assault unit towards the center zone in a V formation. This strategy was quite
+        effective in that you are positioning to capture two zones while also forcing your opponent to
+        play at a much faster pace. Since the tank alongside a unit or two can control or at least contest
+        a zone, much more units can focus the middle zone. This leads to very chaotic fights since
+        players cannot always risk giving away the central zone so early into the game. <br>
+        Another strategy that was seen throughout was a slower and focused strategy, more focused on
+        setting up the board. In this case, the strategy involved moving the sniper unit towards the side
+        with no log so the sniper can get a clear shot of the center and corner zone. From there, the
+        player can choose to advance their units towards either of the flags, patiently leaving units in
+        positions that are just out of range of the enemy units in order to react when the enemy units
+        start taking action. <br>
+        The final strategy to have emerged started the turn with splitting units evenly between each
+        zone. When the opponent starts moving their units towards certain zones, the player will look to
+        move all their units towards the two zones that have the least amount of opposing units. The
+        opponent is put into an awkward position at times especially if the heavily committed towards
+        certain locations and can lead to an early to mid-game advantage when pulled off.
+    </p>
+</div>
+<footer>
+    <div class="container f">
+        <div class="ff">
+            <h2>Warfare Woods!!!</h2>
+            <p>Simon Fraser University</p>
+            <p>Spring 2025 - IAT 210</p>
+            <p>Dr. Michael Filimowicz</p>
+            <p>Lillian Herbst, James Cam, Khiem Dinh Can, Nikola Kazulin, Dony Wang</p>
+        </div>
+        <img src="imgs/footer.png" alt="logo">
+    </div>
+</footer>
+</body>
+<script>
+</script>
+</html>

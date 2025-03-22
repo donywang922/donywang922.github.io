@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Try Warfare Woods</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div class="action end_turn">
+    <h3></h3>
+    <div class="end_turn">
+        <button class="btn">
+            End Turn
+        </button>
+    </div>
+    <div class="waiting">
+        <span>The opponent is operating...</span>
+    </div>
+    <div class="place">
+        <div class="total">0/0 pt</div>
+        <div data-soldier="Assault">
+            <img src="img/soldier/assault.png" alt="">
+            <span>0</span>
+        </div>
+        <div data-soldier="Engineer">
+            <img src="img/soldier/engineer.png" alt="">
+            <span>0</span>
+        </div>
+        <div data-soldier="Sniper">
+            <img src="img/soldier/sniper.png" alt="">
+            <span>0</span>
+        </div>
+        <div data-soldier="Tank">
+            <img src="img/soldier/tank.png" alt="">
+            <span>0</span>
+        </div>
+    </div>
+    <div class="soldier">
+        <img src="img/Soldier.png" alt="">
+        <div>
+            <p>Type: <span class="type"></span></p>
+            <p>Equip: <span class="equip"></span></p>
+            <p>Location: <span class="location"></span></p>
+            <div class="drop">Drop equipment card here to equip.</div>
+        </div>
+    </div>
+    <div class="batch">
+        <span>Click on a tile to make all selected soldiers move closer to it.</span>
+    </div>
+</div>
+<div class="card">
+</div>
+<div class="enemy_card">
+    <div></div>
+    <div></div>
+    <h1>0</h1>
+</div>
+<div class="force">
+    <div class="l" style="--f:0">
+        <div></div>
+    </div>
+    <span class="l">0</span>
+    <h2>VS</h2>
+    <span class="r">0</span>
+    <div class="r" style="--f:0">
+        <div></div>
+    </div>
+</div>
+<div class="info">
+    <h3></h3>
+    <h2>#000000</h2>
+</div>
+<div id="container"></div>
+<script type="importmap">
+    {
+      "imports": {
+        "three": "./three/build/three.module.js",
+        "three/examples/jsm/": "./three/examples/jsm/",
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.3.0/firebase-firestore.js"
+      }
+    }
+</script>
+<script type="module" src="model.js"></script>
+<script type="module" src="main.js"></script>
+<script type="module" src="connection.js"></script>
+</body>
+</html>

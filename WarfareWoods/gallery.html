@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Warfare Woods!!!</title>
+    <link rel="icon" href="imgs/icon.png" crossorigin="anonymous">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/page.css">
+    <link rel="stylesheet" crossorigin="anonymous" href="css/gallery.css">
+</head>
+<body style="--bgo:0">
+<header>
+    <div class="container">
+        <input type="checkbox" id="nav">
+        <div class="logo">
+            <a href="index.html">
+                <img class="ico" src="imgs/logo.png" alt="logo">
+            </a>
+            <span class="text">Warfare Woods!!!</span>
+        </div>
+        <div class="tab hd40">
+            <a href="index.html">HOME</a>
+            <a href="rule.html">RULE</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="files.html">FILES</a>
+            <a href="/WarfareWoodsWeb/index.html">TRY ONLINE</a>
+        </div>
+        <div class="ff je f40 menu_btn">
+            <label for="nav">
+                <img src="imgs/bars-solid.svg" alt="nav">
+            </label>
+        </div>
+        <div class="menu f40">
+            <a href="index.html">HOME</a>
+            <a href="rule.html">RULE</a>
+            <a href="gallery.html">GALLERY</a>
+            <a href="files.html">FILES</a>
+            <a href="/WarfareWoodsWeb/index.html">TRY ONLINE</a>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div class="category">
+        <h1>Pieces</h1>
+        <p>All pieces in Warfare Woods!</p>
+    </div>
+    <div class="imgs">
+        <img src="imgs/gallery/p3.webp" alt="">
+        <img src="imgs/gallery/p4.webp" alt="">
+        <img src="imgs/gallery/p5.webp" alt="">
+        <img src="imgs/gallery/p6.webp" alt="">
+        <img src="imgs/gallery/p7.webp" alt="">
+        <img src="imgs/gallery/p8.webp" alt="">
+        <img src="imgs/gallery/p9.webp" alt="">
+        <img src="imgs/gallery/p10.webp" alt="">
+        <img src="imgs/gallery/p11.webp" alt="">
+        <img src="imgs/gallery/p12.webp" alt="">
+        <img src="imgs/gallery/p13.webp" alt="">
+        <img src="imgs/gallery/p1.webp" alt="">
+        <div></div>
+    </div>
+    <div class="category">
+        <h1>Original Artbook</h1>
+        <p>Plan and Process</p>
+    </div>
+    <div class="imgs">
+        <img src="imgs/gallery/a1.webp" alt="">
+        <img src="imgs/gallery/a2.webp" alt="">
+        <img src="imgs/gallery/a3.webp" alt="">
+        <img src="imgs/gallery/a4.webp" alt="">
+        <img src="imgs/gallery/p2.webp" alt="">
+        <img src="imgs/gallery/a15.webp" alt="">
+        <img src="imgs/gallery/a16.webp" alt="">
+        <img src="imgs/gallery/a5.webp" alt="">
+        <img src="imgs/gallery/a6.webp" alt="">
+        <img src="imgs/gallery/a7.webp" alt="">
+        <img src="imgs/gallery/a8.webp" alt="">
+        <img src="imgs/gallery/a9.webp" alt="">
+        <img src="imgs/gallery/a10.webp" alt="">
+        <img src="imgs/gallery/a11.webp" alt="">
+        <img src="imgs/gallery/a12.webp" alt="">
+        <img src="imgs/gallery/a13.webp" alt="">
+        <img src="imgs/gallery/a14.webp" alt="">
+        <div></div>
+    </div>
+    <dialog id="img_dia">
+        <img src="imgs/gallery/a1.webp" alt="">
+    </dialog>
+</div>
+<footer>
+    <div class="container f">
+        <div class="ff">
+            <h2>Warfare Woods!!!</h2>
+            <p>Simon Fraser University</p>
+            <p>Spring 2025 - IAT 210</p>
+            <p>Dr. Michael Filimowicz</p>
+            <p>Lillian Herbst, James Cam, Khiem Dinh Can, Nikola Kazulin, Dony Wang</p>
+        </div>
+        <img src="imgs/footer.png" alt="logo">
+    </div>
+</footer>
+</body>
+<script>
+    const img_dia = document.querySelector("#img_dia")
+    img_dia.addEventListener('click', (e) => {
+        if (e.target === img_dia) {
+            img_dia.close()
+        }
+    })
+
+    function show_img(img) {
+        img_dia.querySelector('img').src = img.src
+        img_dia.showModal()
+    }
+
+    for (let img of document.querySelectorAll('.imgs img')) {
+        img.addEventListener('click', () => {
+            show_img(img)
+        })
+    }
+</script>
+</html>

@@ -1,0 +1,37 @@
+
+.file_tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 1em;
+
+    .file_tab {
+        border-radius: 2em;
+        border: 2px solid var(--color_a);
+        overflow: hidden;
+        background: var(--color_a);
+        transition: transform 0.2s ease;
+        box-shadow: var(--text3) 1px 1px 2px;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            font-size: x-large;
+        }
+
+        h1, p {
+            margin: 1rem 1rem;
+        }
+
+        img {
+            height: 10em;
+            width: 100%;
+        }
+    }
+}
+@media screen and (max-width: 60em) {
+    .file_tabs {
+        grid-template-columns: 1fr !important;
+    }
+}
