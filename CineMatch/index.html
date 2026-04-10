@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="demo.css">
+    <title>CineMatch Edge AI</title>
+</head>
+<body>
+
+<div id="search-container">
+    <label for="search-input"></label>
+    <input type="text" id="search-input" placeholder="Search movie title...">
+    <label for="csv-upload" class="upload-btn" title="Upload Letterboxd CSV">📁</label>
+    <input type="file" id="csv-upload" accept=".csv">
+</div>
+
+<div id="movie-grid"></div>
+
+<div id="page-indicator">Page <span id="current-page">1</span> / <span id="total-pages">1</span> (Scroll or Use Arrow
+    Keys)
+</div>
+
+<dialog id="movie-modal">
+    <div class="close-btn" id="close-dialog-btn">×</div>
+    <div class="modal-content" id="modal-inner-content">
+    </div>
+</dialog>
+
+<template id="card-template">
+    <div class="card">
+        <div class="global-rating"></div>
+        <div class="card-info">
+            <div class="card-title"></div>
+            <div class="stars-container">
+                <div class="star-wrapper">
+                    <span class="star left-half" data-val="0.5">★</span>
+                    <span class="star right-half" data-val="1.0">★</span>
+                </div>
+                <div class="star-wrapper">
+                    <span class="star left-half" data-val="1.5">★</span>
+                    <span class="star right-half" data-val="2.0">★</span>
+                </div>
+                <div class="star-wrapper">
+                    <span class="star left-half" data-val="2.5">★</span>
+                    <span class="star right-half" data-val="3.0">★</span>
+                </div>
+                <div class="star-wrapper">
+                    <span class="star left-half" data-val="3.5">★</span>
+                    <span class="star right-half" data-val="4.0">★</span>
+                </div>
+                <div class="star-wrapper">
+                    <span class="star left-half" data-val="4.5">★</span>
+                    <span class="star right-half" data-val="5.0">★</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="dialog-template">
+    <div class="modal-top">
+        <div class="modal-info">
+            <h1 class="modal-title"></h1>
+            <div class="modal-meta"></div>
+            <p class="modal-ratings-text" style="color: #a8b2d1; margin-top: 20px;"></p>
+        </div>
+    </div>
+    <div class="modal-bottom">
+        <div class="scores-base">
+            <h3 style="margin-top:0; color:#8892b0;">Base Model Prediction Breakdown</h3>
+            <div class="score-row"><span>Deep AutoRec (Neural Network)</span> <span class="score-autorec"></span></div>
+            <div class="score-row"><span>SVD (Matrix Factorization)</span> <span class="score-svd"></span></div>
+            <div class="score-row"><span>User-KNN (Interest Circles)</span> <span class="score-userknn"></span></div>
+            <div class="score-row"><span>Item-KNN (Similar Items)</span> <span class="score-itemknn"></span></div>
+            <div class="score-row"><span>Content-KNN (Metadata)</span> <span class="score-contentknn"></span></div>
+        </div>
+        <div class="scores-meta">
+            <h3 style="margin-top:0; color:#8892b0;">Meta-Learner Final Decision</h3>
+            <div class="meta-circle">
+                <div class="meta-score"></div>
+                <div style="font-size:12px; color:#8892b0;">Predicted Rating</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script type="importmap">
+    {
+      "imports": {
+        "onnxruntime-web": "./node_modules/onnxruntime-web/dist/ort.mjs"
+      }
+    }
+</script>
+<script type="module">
+    import {NN_Meta} from './models.js';
+
+    let allMovies = [];
+    let displayMovies = [];
+    let userRatings = {};
+
+    let currentPage = 0;
+    let pageSize = 0;
+    let isThrottled = false;
+
+    const gridEl = document.getElementById('movie-grid');
+    const dialog = document.getElementById('movie-modal');
+    const dialogInner = document.getElementById('modal-inner-content');
+
+    // Initialize model engine
+    const recommender = new NN_Meta();
+    let isModelReady = false;
+
+    document.getElementById('close-dialog-btn').addEventListener('click', () => {
+        dialog.close();
+    });
+
+    function calculateGrid() {
+        const cardWidth = 220;
+        const cardHeight = 330;
+        const gap = 20;
+
+        const availableWidth = window.innerWidth - 80;
+        const availableHeight = window.innerHeight - 120;
+
+        const cols = Math.floor((availableWidth + gap) / (cardWidth + gap));
+        const rows = Math.floor((availableHeight + gap) / (cardHeight + gap));
+
+        pageSize = cols * rows;
+
+        gridEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        gridEl.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+        renderPage();
+    }
+
+    function sortAllMovies() {
+        allMovies.sort((a, b) => {
+            let av = a.global_avg
+            let bv = b.global_avg
+            if (userRatings[a.slug] !== undefined) av = userRatings[a.slug];
+            else if (a.ai_scores && a.ai_scores.meta !== 0) av = a.ai_scores.meta;
+            if (userRatings[b.slug] !== undefined) bv = userRatings[b.slug];
+            else if (b.ai_scores && b.ai_scores.meta !== 0) bv = b.ai_scores.meta;
+            return bv - av;
+        });
+    }
+
+    async function sortMovies() {
+        if (!isModelReady || Object.keys(userRatings).length < 3) {
+            sortAllMovies();
+            filterMovies();
+            renderPage(1);
+            return;
+        }
+
+        const aiResults = await recommender.get_recommendations(userRatings);
+
+        allMovies.forEach(movie => {
+            const result = aiResults[movie.slug];
+            if (result) {
+                movie.ai_scores.meta = result.meta;
+                movie.ai_scores.svd = result.svd;
+                movie.ai_scores.itemknn = result.itemknn;
+                movie.ai_scores.autorec = result.autorec;
+                movie.ai_scores.contentknn = result.contentknn;
+                movie.ai_scores.userknn = result.userknn;
+                movie.isWatched = result.is_watched;
+            }
+        });
+
+        sortAllMovies();
+        filterMovies();
+        renderPage(1);
+    }
+
+    function renderPage() {
+        gridEl.innerHTML = '';
+        const totalPages = Math.ceil(displayMovies.length / pageSize);
+
+        if (currentPage >= totalPages) currentPage = Math.max(0, totalPages - 1);
+        if (currentPage < 0) currentPage = 0;
+
+        document.getElementById('current-page').innerText = currentPage + 1;
+        document.getElementById('total-pages').innerText = totalPages || 1;
+
+        const startIdx = currentPage * pageSize;
+        const pageMovies = displayMovies.slice(startIdx, startIdx + pageSize);
+
+        const template = document.getElementById('card-template');
+
+        pageMovies.forEach(movie => {
+            const clone = template.content.cloneNode(true);
+            const card = clone.querySelector('.card');
+
+            card.style.backgroundImage = `url('${movie.poster_url}')`;
+            card.addEventListener('click', () => openModal(movie));
+
+            if (userRatings[movie.slug] !== undefined) {
+                card.style.border = "2px solid gold";
+                card.style.opacity = "0.9";
+            }
+
+            clone.querySelector('.global-rating').innerText = `⭐ ${movie.global_avg}`;
+            clone.querySelector('.card-title').innerText = movie.title;
+
+            const stars = clone.querySelectorAll('.star');
+            const myRating = userRatings[movie.slug] || 0;
+
+            stars.forEach(star => {
+                const val = parseFloat(star.getAttribute('data-val'));
+
+                if (myRating >= val) {
+                    star.classList.add('full');
+                }
+
+                star.addEventListener('click', (e) => {
+                    e.stopPropagation();
+
+                    if (userRatings[movie.slug] === val) {
+                        delete userRatings[movie.slug];
+                    } else {
+                        userRatings[movie.slug] = val;
+                    }
+
+                    sortMovies();
+                });
+            });
+
+            gridEl.appendChild(clone);
+        });
+    }
+
+    function RTD(num) {
+        if (num < 0) return 'N/A';
+        return Math.round(num * 1000) / 1000;
+    }
+
+    function openModal(movie) {
+        dialogInner.innerHTML = '';
+
+        const template = document.getElementById('dialog-template');
+        const clone = template.content.cloneNode(true);
+
+        const top = clone.querySelector('.modal-top');
+        top.style.backgroundImage = `url('${movie.poster_url}')`;
+        clone.querySelector('.modal-title').innerText = movie.title;
+        clone.querySelector('.modal-meta').innerText = `${movie.year} | Director: ${movie.director}`;
+
+        clone.querySelector('.modal-ratings-text').innerHTML = `Public Average Rating: ⭐ ${movie.global_avg} <br> Your Rating: ${userRatings[movie.slug] ? '⭐ ' + userRatings[movie.slug] : 'Unrated'}`;
+
+        clone.querySelector('.score-autorec').innerText = RTD(movie.ai_scores.autorec);
+        clone.querySelector('.score-svd').innerText = RTD(movie.ai_scores.svd);
+        clone.querySelector('.score-userknn').innerText = RTD(movie.ai_scores.userknn);
+        clone.querySelector('.score-itemknn').innerText = RTD(movie.ai_scores.itemknn);
+        clone.querySelector('.score-contentknn').innerText = RTD(movie.ai_scores.contentknn);
+        clone.querySelector('.meta-score').innerText = RTD(movie.ai_scores.meta);
+
+        dialogInner.appendChild(clone);
+        dialog.showModal();
+    }
+
+    function turnPage(delta) {
+        if (isThrottled) return;
+        const totalPages = Math.ceil(displayMovies.length / pageSize);
+
+        let newPage = currentPage + delta;
+        if (newPage >= 0 && newPage < totalPages) {
+            currentPage = newPage;
+            renderPage();
+            isThrottled = true;
+            setTimeout(() => isThrottled = false, 50);
+        }
+    }
+
+    let query = ''
+
+    function filterMovies() {
+        if (!query) {
+            displayMovies = [...allMovies];
+        } else {
+            displayMovies = allMovies.filter(m => m.title.toLowerCase().includes(query));
+        }
+        renderPage();
+    }
+
+    window.addEventListener('wheel', (e) => {
+        if (dialog.open) return;
+        turnPage(e.deltaY > 0 ? 1 : -1);
+    });
+
+    window.addEventListener('keydown', (e) => {
+        if (dialog.open) return;
+        if (e.key === 'ArrowDown' || e.key === 'PageDown') turnPage(1);
+        if (e.key === 'ArrowUp' || e.key === 'PageUp') turnPage(-1);
+    });
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+        query = e.target.value.toLowerCase();
+        currentPage = 0;
+        filterMovies();
+    });
+
+    function parseCSVLine(text) {
+        let result = [];
+        let col = '';
+        let inQuotes = false;
+        for (let i = 0; i < text.length; i++) {
+            let char = text[i];
+            if (char === '"' && text[i + 1] === '"') {
+                col += '"';
+                i++;
+            } else if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(col);
+                col = '';
+            } else {
+                col += char;
+            }
+        }
+        result.push(col);
+        return result;
+    }
+
+    document.getElementById('csv-upload').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const text = event.target.result;
+            const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+            if (lines.length < 2) return;
+
+            const headers = parseCSVLine(lines[0]).map(h => h.trim());
+            const nameIdx = headers.indexOf('Name');
+            const yearIdx = headers.indexOf('Year');
+            const ratingIdx = headers.indexOf('Rating');
+
+            if (nameIdx === -1 || yearIdx === -1 || ratingIdx === -1) {
+                alert('CSV format error: Missing Name, Year, or Rating columns.');
+                return;
+            }
+
+            const movieLookup = {};
+            allMovies.forEach(m => {
+                const safeTitle = m.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const key = `${safeTitle}_${m.year}`;
+                movieLookup[key] = m.slug;
+            });
+
+            let importCount = 0;
+
+            for (let i = 1; i < lines.length; i++) {
+                const parts = parseCSVLine(lines[i]);
+                if (parts.length <= Math.max(nameIdx, yearIdx, ratingIdx)) continue;
+
+                const title = parts[nameIdx].trim();
+                const year = parts[yearIdx].trim();
+                const rating = parseFloat(parts[ratingIdx]);
+
+                if (title && year && !isNaN(rating)) {
+                    const safeTitle = title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const key = `${safeTitle}_${year}`;
+
+                    const matchedSlug = movieLookup[key];
+
+                    if (matchedSlug) {
+                        userRatings[matchedSlug] = rating;
+                        importCount++;
+                    } else {
+                        console.warn(`Movie not found in internal DB: ${title} (${year})`);
+                    }
+                }
+            }
+
+            alert(`Successfully imported ${importCount} ratings!`);
+            sortMovies();
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    });
+
+    window.addEventListener('resize', () => {
+        clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(calculateGrid, 200);
+    });
+
+    // ================= System Boot Sequence =================
+    async function initSystem() {
+        try {
+            await recommender.initialize();
+            isModelReady = true;
+
+            const res = await fetch('./movie_database.json');
+            const data = await res.json();
+
+            allMovies = Object.entries(data).map(([slug, info]) => {
+                return {
+                    slug: slug,
+                    title: info.title,
+                    year: info.year,
+                    director: info.director,
+                    poster_url: info.poster_url,
+                    global_avg: info.avg,
+                    ai_scores: {
+                        autorec: 0, svd: 0, userknn: 0, itemknn: 0, contentknn: 0, meta: 0
+                    }
+                };
+            });
+            allMovies.sort((a, b) => b.global_avg - a.global_avg);
+
+            displayMovies = [...allMovies];
+
+            await sortMovies();
+            calculateGrid();
+
+        } catch (err) {
+            console.error("System initialization failed: ", err);
+        }
+    }
+
+    initSystem();
+</script>
+</body>
+</html>
