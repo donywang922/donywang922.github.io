@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+		/>
+		<meta name="theme-color" content="#061210" />
+		<title>EcoLoop — 模块化自清洁保温水瓶</title>
+
+		<script type="module" crossorigin src="./assets/index-DilKBBFW.js"></script>
+		<link rel="stylesheet" crossorigin href="./assets/index-CeCLVYLz.css">
+	</head>
+	<body>
+		<div class="ambient" aria-hidden="true">
+			<div class="ambient__orb ambient__orb--one"></div>
+			<div class="ambient__orb ambient__orb--two"></div>
+			<div class="ambient__grid"></div>
+		</div>
+
+		<canvas id="product-canvas" aria-label="EcoLoop 三维产品动画"></canvas>
+		<div id="model-status" class="model-status" aria-live="polite">
+			<span class="model-status__dot"></span>
+			正在载入 EcoLoop
+		</div>
+
+		<div class="deck-mark" aria-hidden="true">
+			<span class="deck-mark__loop">∞</span>
+			<span>EcoLoop</span>
+		</div>
+
+		<div class="reveal">
+			<div class="slides">
+				<section class="pain-slide pain-slide--weight" data-scene="emoji">
+					<div class="pain-copy">
+						<p class="eyebrow">每天携带</p>
+						<h1>太重？</h1>
+						<p class="support">水瓶，不该成为负担。</p>
+					</div>
+					<div class="emoji-stage emoji-stage--weight" aria-hidden="true">
+						<img class="emoji emoji--face-smile" src="./twemoji/1f600.svg" alt="" />
+						<img class="emoji emoji--falling-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--impact" src="./twemoji/1f4a5.svg" alt="" />
+						<span class="face-crack"></span>
+					</div>
+					<aside class="notes">笑脸。水瓶从上掉下来，砸中笑脸，笑脸裂开。太重？</aside>
+				</section>
+
+				<section class="pain-slide pain-slide--heat" data-scene="emoji">
+					<div class="pain-copy pain-copy--right">
+						<p class="eyebrow">刚倒入热水</p>
+						<h1>太烫？</h1>
+						<p class="support">杯壁不该让人缩手。</p>
+					</div>
+					<div class="emoji-stage emoji-stage--heat" aria-hidden="true">
+						<img class="emoji emoji--hot-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--hand" src="./twemoji/1f590.svg" alt="" />
+						<img class="emoji emoji--angry" src="./twemoji/1f621.svg" alt="" />
+						<span class="heat-wave heat-wave--one"></span>
+						<span class="heat-wave heat-wave--two"></span>
+						<span class="heat-wave heat-wave--three"></span>
+					</div>
+					<aside class="notes">水瓶。一只手触摸瓶身，立刻缩回；红脸。太烫？</aside>
+				</section>
+
+				<section class="pain-slide pain-slide--leak" data-scene="emoji">
+					<div class="pain-copy">
+						<p class="eyebrow">放进背包</p>
+						<h1>又滴水？</h1>
+						<p class="support">包里的惊喜，最好不是漏水。</p>
+					</div>
+					<div class="emoji-stage emoji-stage--leak" aria-hidden="true">
+						<img class="emoji emoji--leak-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--drop" src="./twemoji/1f4a7.svg" alt="" />
+						<span class="puddle"></span>
+					</div>
+					<aside class="notes">水瓶。水滴从瓶子左侧放大并往下移动。滴水？</aside>
+				</section>
+
+				<section class="pain-slide pain-slide--clean" data-scene="emoji">
+					<div class="pain-copy pain-copy--right">
+						<p class="eyebrow">喝完蛋白粉</p>
+						<h1>洗不干净？</h1>
+						<p class="support">残留不该藏在瓶底。</p>
+					</div>
+					<div class="emoji-stage emoji-stage--clean" aria-hidden="true">
+						<img class="emoji emoji--side-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--toothbrush" src="./twemoji/1faa5.svg" alt="" />
+						<span class="scrub-bubble scrub-bubble--one"></span>
+						<span class="scrub-bubble scrub-bubble--two"></span>
+						<span class="scrub-bubble scrub-bubble--three"></span>
+					</div>
+					<aside class="notes">水瓶横过来，牙刷插进去。洗不干净？</aside>
+				</section>
+
+				<section class="pain-slide pain-slide--bin" data-scene="emoji">
+					<div class="pain-copy pain-copy--center">
+						<p class="eyebrow">一次次妥协之后</p>
+						<h1>该结束了。</h1>
+						<p class="support">换一种水瓶的逻辑。</p>
+					</div>
+					<div class="emoji-stage emoji-stage--bin" aria-hidden="true">
+						<img class="emoji emoji--trash-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--trash" src="./twemoji/1f5d1.svg" alt="" />
+					</div>
+					<aside class="notes">垃圾桶。水瓶飞进去。该结束了！</aside>
+				</section>
+
+				<section class="product-slide product-slide--hero" data-scene="model" data-frame="120">
+					<div class="product-copy product-copy--hero">
+						<p class="eyebrow">隆重推出</p>
+						<h1 class="wordmark">Eco<span>Loop</span><sup>∞</sup></h1>
+						<p class="support">一只真正围绕日常问题重新设计的水瓶。</p>
+					</div>
+					<aside class="notes">隆重推出，EcoLoop！</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="240">
+					<div class="product-copy">
+						<p class="eyebrow">不再逐个妥协</p>
+						<h2>四个麻烦，<br />一个答案。</h2>
+						<p class="support">所有问题，全面解决。</p>
+					</div>
+					<aside class="notes">所有问题，全面解决。</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="360">
+					<div class="product-copy product-copy--top">
+						<p class="eyebrow">核心设计</p>
+						<h2>一个瓶子，<br />三种能力。</h2>
+						<p class="feature-line">
+							<span>模块化</span><i></i><span>自清洁</span><i></i><span>保温</span>
+						</p>
+					</div>
+					<aside class="notes">模块化自清洁保温水瓶。</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="480">
+					<div class="product-copy">
+						<p class="eyebrow">磁吸搅拌</p>
+						<h2><strong>15</strong> 秒，<br />均匀混合。</h2>
+						<p class="support">旋转底座，强劲动力轻松混合粉末。</p>
+					</div>
+					<aside class="notes">
+						内置磁吸搅拌棒，旋转底座即可产生强劲旋转动力，可在15秒内轻松混合任何粉末。
+					</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="600">
+					<div class="product-copy product-copy--bottom">
+						<p class="eyebrow">高速涡流</p>
+						<h2><strong>15</strong> 秒，<br />瓶内自洁。</h2>
+						<p class="support">让水流带走每一处残留。</p>
+					</div>
+					<aside class="notes">或是产生高速涡流，15秒内清洗瓶内全部残留。</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="720">
+					<div class="product-copy">
+						<p class="eyebrow">完全模块化</p>
+						<h2>徒手拆开，<br />每处都洗得到。</h2>
+						<p class="support">没有工具，也没有卫生死角。</p>
+					</div>
+					<aside class="notes">全模块化设计，徒手即可拆卸，无任何卫生死角。</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="840">
+					<div class="product-copy product-copy--top">
+						<p class="eyebrow">人字形行星齿轮</p>
+						<h2>一体成型，<br />不怕丢件。</h2>
+						<p class="support">加速器没有任何可脱落的活动部件。</p>
+					</div>
+					<aside class="notes">一体成型人字形行星齿轮加速器，无任何活动部件，不惧丢失。</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="960">
+					<div class="product-copy">
+						<p class="eyebrow">双层保温罐体</p>
+						<h2>温度，<br />留在瓶里。</h2>
+						<p class="metric-line">
+							<strong>2h</strong><span>保持温度</span>
+							<strong>0</strong><span>滴水 · 烫手</span>
+						</p>
+					</div>
+					<aside class="notes">
+						还有更多。双层保温罐体，保持温度2小时，不再滴水，不再烫手。
+					</aside>
+				</section>
+
+				<section
+					class="product-slide product-slide--config"
+					data-scene="model"
+					data-frame-start="960"
+					data-sequence="1080,1200,1320,1440,1560,1680,1800"
+				>
+					<div class="product-copy product-copy--bottom">
+						<p class="eyebrow">自由组合</p>
+						<h2>一瓶，<br />多种可能。</h2>
+						<p class="support">多种罐体 × 多种瓶盖，随意搭配。</p>
+					</div>
+					<div class="combo-ticker" aria-hidden="true">
+						<span>01</span><i></i><span>02</span><i></i><span>03</span><i></i><span>04</span>
+					</div>
+					<aside class="notes">完全模块化，多种罐体，多种瓶盖，随意搭配。</aside>
+				</section>
+
+				<section class="product-slide product-slide--final" data-scene="model" data-frame="1920">
+					<div class="final-copy">
+						<p class="eyebrow">模块化自清洁保温水瓶</p>
+						<h1 class="wordmark">Eco<span>Loop</span><sup>∞</sup></h1>
+						<div class="price">$40</div>
+						<p class="coming">暂未开放预订 · coming s<span>∞</span>n</p>
+					</div>
+					<aside class="notes">
+						EcoLoop！模块化自清洁保温水瓶，仅需40美元。没有开放预订，coming soon。
+					</aside>
+				</section>
+			</div>
+		</div>
+
+	</body>
+</html>

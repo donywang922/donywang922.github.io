@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+		/>
+		<meta name="theme-color" content="#061210" />
+		<title>EcoLoop — Modular Self-Cleaning Insulated Bottle</title>
+
+		<script type="module" crossorigin src="./assets/index-Br8rcJqJ.js"></script>
+		<link rel="stylesheet" crossorigin href="./assets/index-gJn3U7ak.css">
+	</head>
+	<body>
+		<div class="ambient" aria-hidden="true">
+			<div class="ambient__orb ambient__orb--one"></div>
+			<div class="ambient__orb ambient__orb--two"></div>
+			<div class="ambient__grid"></div>
+		</div>
+
+		<canvas id="product-canvas" aria-label="EcoLoop 3D product animation"></canvas>
+		<div id="model-status" class="model-status" aria-live="polite">
+			<span class="model-status__dot"></span>
+			Loading EcoLoop
+		</div>
+
+		<div class="deck-mark" aria-hidden="true">
+			<span class="deck-mark__loop">∞</span>
+			<span>EcoLoop</span>
+		</div>
+
+		<div class="reveal">
+			<div class="slides">
+				<section class="pain-slide pain-slide--weight" data-scene="emoji">
+					<div class="pain-copy">
+						<p class="eyebrow">Every day</p>
+						<h1>Too heavy?</h1>
+						<p class="support">A bottle should never weigh you down.</p>
+					</div>
+					<div class="emoji-stage emoji-stage--weight" aria-hidden="true">
+						<img class="emoji emoji--face-smile" src="./twemoji/1f600.svg" alt="" />
+						<img class="emoji emoji--falling-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--impact" src="./twemoji/1f4a5.svg" alt="" />
+						<span class="face-crack"></span>
+					</div>
+					<aside class="notes">
+						A smile. A bottle drops from above, hits the face, and leaves a crack. Too heavy?
+
+						[Sources]
+						- Twemoji 14.0.2 graphics, supplied in the project assets.
+					</aside>
+				</section>
+
+				<section class="pain-slide pain-slide--heat" data-scene="emoji">
+					<div class="pain-copy pain-copy--right">
+						<p class="eyebrow">Freshly filled</p>
+						<h1>Too hot?</h1>
+						<p class="support">The bottle should hold the heat—not your hands.</p>
+					</div>
+					<div class="emoji-stage emoji-stage--heat" aria-hidden="true">
+						<img class="emoji emoji--hot-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--hand" src="./twemoji/1f590.svg" alt="" />
+						<img class="emoji emoji--angry" src="./twemoji/1f621.svg" alt="" />
+						<span class="heat-wave heat-wave--one"></span>
+						<span class="heat-wave heat-wave--two"></span>
+						<span class="heat-wave heat-wave--three"></span>
+					</div>
+					<aside class="notes">
+						A hand touches the bottle and immediately pulls away. Too hot?
+
+						[Sources]
+						- Twemoji 14.0.2 graphics, supplied in the project assets.
+					</aside>
+				</section>
+
+				<section class="pain-slide pain-slide--leak" data-scene="emoji">
+					<div class="pain-copy">
+						<p class="eyebrow">In your bag</p>
+						<h1>Leaking?</h1>
+						<p class="support">The surprise in your bag should never be a spill.</p>
+					</div>
+					<div class="emoji-stage emoji-stage--leak" aria-hidden="true">
+						<img class="emoji emoji--leak-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--drop" src="./twemoji/1f4a7.svg" alt="" />
+						<span class="puddle"></span>
+					</div>
+					<aside class="notes">
+						A drop grows beneath the bottle and falls. Leaking again?
+
+						[Sources]
+						- Twemoji 14.0.2 graphics, supplied in the project assets.
+					</aside>
+				</section>
+
+				<section class="pain-slide pain-slide--clean" data-scene="emoji">
+					<div class="pain-copy pain-copy--right">
+						<p class="eyebrow">After a protein shake</p>
+						<h1>Still dirty?</h1>
+						<p class="support">Residue should never hide at the bottom.</p>
+					</div>
+					<div class="emoji-stage emoji-stage--clean" aria-hidden="true">
+						<img class="emoji emoji--side-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--toothbrush" src="./twemoji/1faa5.svg" alt="" />
+						<span class="scrub-bubble scrub-bubble--one"></span>
+						<span class="scrub-bubble scrub-bubble--two"></span>
+						<span class="scrub-bubble scrub-bubble--three"></span>
+					</div>
+					<aside class="notes">
+						The bottle turns sideways and a toothbrush struggles to reach inside. Still dirty?
+
+						[Sources]
+						- Twemoji 14.0.2 graphics, supplied in the project assets.
+					</aside>
+				</section>
+
+				<section class="pain-slide pain-slide--bin" data-scene="emoji">
+					<div class="pain-copy pain-copy--center">
+						<p class="eyebrow">One compromise too many</p>
+						<h1>Enough.</h1>
+						<p class="support">It is time to rethink the bottle.</p>
+					</div>
+					<div class="emoji-stage emoji-stage--bin" aria-hidden="true">
+						<img class="emoji emoji--trash-bottle" src="./twemoji/1f964.svg" alt="" />
+						<img class="emoji emoji--trash" src="./twemoji/1f5d1.svg" alt="" />
+					</div>
+					<aside class="notes">
+						The bottle flies into the trash. Enough.
+
+						[Sources]
+						- Twemoji 14.0.2 graphics, supplied in the project assets.
+					</aside>
+				</section>
+
+				<section class="product-slide product-slide--hero" data-scene="model" data-frame="120">
+					<div class="product-copy product-copy--hero">
+						<p class="eyebrow">Introducing</p>
+						<h1 class="wordmark">Eco<span>Loop</span><sup>∞</sup></h1>
+						<p class="support">A bottle redesigned around real everyday problems.</p>
+					</div>
+					<aside class="notes">Introducing EcoLoop.</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="240">
+					<div class="product-copy">
+						<p class="eyebrow">No more trade-offs</p>
+						<h2>Four problems.<br />One answer.</h2>
+						<p class="support">Every issue, solved in one system.</p>
+					</div>
+					<aside class="notes">Every problem, solved in one system.</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="360">
+					<div class="product-copy product-copy--top">
+						<p class="eyebrow">Built around the basics</p>
+						<h2>One bottle.<br />Three powers.</h2>
+						<p class="feature-line">
+							<span>Modular</span><i></i><span>Self-cleaning</span><i></i><span>Insulated</span>
+						</p>
+					</div>
+					<aside class="notes">A modular, self-cleaning, insulated bottle.</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="480">
+					<div class="product-copy">
+						<p class="eyebrow">Magnetic mixing</p>
+						<h2>Mixed in<br /><strong>15</strong> seconds.</h2>
+						<p class="support">Twist the base for powerful, effortless blending.</p>
+					</div>
+					<aside class="notes">
+						The built-in magnetic stir bar turns with the base, creating enough power to mix any powder in
+						15 seconds.
+					</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="600">
+					<div class="product-copy product-copy--bottom">
+						<p class="eyebrow">High-speed vortex</p>
+						<h2>Clean in<br /><strong>15</strong> seconds.</h2>
+						<p class="support">Let the vortex reach every trace of residue.</p>
+					</div>
+					<aside class="notes">
+						The same mechanism creates a high-speed vortex that clears residue from the bottle in 15
+						seconds.
+					</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="720">
+					<div class="product-copy">
+						<p class="eyebrow">Fully modular</p>
+						<h2>Take it apart.<br />Clean every surface.</h2>
+						<p class="support">No tools. No hidden hygiene traps.</p>
+					</div>
+					<aside class="notes">
+						The fully modular design comes apart by hand, leaving no hidden hygiene traps.
+					</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="840">
+					<div class="product-copy product-copy--top">
+						<p class="eyebrow">Herringbone planetary gears</p>
+						<h2>One solid system.<br />Nothing to lose.</h2>
+						<p class="support">The accelerator has no loose moving parts.</p>
+					</div>
+					<aside class="notes">
+						The one-piece herringbone planetary accelerator has no loose parts to misplace.
+					</aside>
+				</section>
+
+				<section class="product-slide" data-scene="model" data-frame="960">
+					<div class="product-copy">
+						<p class="eyebrow">Double-wall insulation</p>
+						<h2>Heat stays<br />inside.</h2>
+						<p class="metric-line">
+							<strong>2h</strong><span>temperature held</span>
+							<strong>0</strong><span>leaks · hot hands</span>
+						</p>
+					</div>
+					<aside class="notes">
+						And there is more: double-wall insulation holds temperature for two hours without leaks or a
+						hot exterior.
+					</aside>
+				</section>
+
+				<section
+					class="product-slide product-slide--config"
+					data-scene="model"
+					data-frame-start="960"
+					data-sequence="1080,1200,1320,1440,1560,1680,1800"
+				>
+					<div class="product-copy product-copy--bottom">
+						<p class="eyebrow">Mix and match</p>
+						<h2>One bottle.<br />Endless options.</h2>
+						<p class="support">Multiple vessels × multiple lids. Make it yours.</p>
+					</div>
+					<div class="combo-ticker" aria-hidden="true">
+						<span>01</span><i></i><span>02</span><i></i><span>03</span><i></i><span>04</span>
+					</div>
+					<aside class="notes">
+						Choose from different vessels and lids, then combine them however you want.
+					</aside>
+				</section>
+
+				<section class="product-slide product-slide--final" data-scene="model" data-frame="1920">
+					<div class="final-copy">
+						<p class="eyebrow">Modular · self-cleaning · insulated</p>
+						<h1 class="wordmark">Eco<span>Loop</span><sup>∞</sup></h1>
+						<div class="price">$40</div>
+						<p class="coming">Pre-orders not open yet · coming s<span>∞</span>n</p>
+					</div>
+					<aside class="notes">
+						EcoLoop: a modular, self-cleaning, insulated bottle for just 40 dollars. Pre-orders are not
+						open yet—coming soon.
+					</aside>
+				</section>
+			</div>
+		</div>
+
+	</body>
+</html>
