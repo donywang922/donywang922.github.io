@@ -50,7 +50,7 @@
 
 - **Time:** 0:42–1:05  
 - **Script:**  
-  > \[hilarie/roi\] We heard the same thing from students: “The milk got mouldy, it smelled, so I just threw it out.” People don't stop caring about the planet; they just get tired of the upkeep. Maintenance loses to convenience. That’s the real barrier.
+  > \[hilarie/roi\] We interviewed students, commuters and gym-goers, eighteen to twenty-five, and heard the same thing over and over: "The milk got mouldy, it smelled, so I just threw it out." People don't stop caring about the planet; they just get tired of the upkeep. Maintenance loses to convenience. That's the real barrier.
 
 ---
 
@@ -58,7 +58,7 @@
 
 - **Time:** 1:05–1:14  
 - **Script:**  
-  > \[dony\] So we rethought the bottle to solve that. This is EcoLoop: a bottle designed to make cleaning faster and easier and saves your life.
+  > \[dony\] So we completely reimagined the bottle to fix that. Meet EcoLoop: it's basically designed to make cleaning a total breeze.
 
 ---
 
@@ -66,7 +66,7 @@
 
 - **Time:** 1:14–1:23  
 - **Script:**  
-  > \[dony\] We stop asking you to choose. We solve the weight, the heat, the leaks, and the cleaning in one simple system.
+  > \[dony\] We’re done with the trade-offs. We’ve solved the weight, the heat, the leaks, and the cleanup all in one simple design.
 
 ---
 
@@ -74,7 +74,7 @@
 
 - **Time:** 1:23–1:32  
 - **Script:**  
-  > \[dony\] EcoLoop works differently. It’s modular so you can reach every surface, self-rinsing so residue doesn't sit, and insulated to keep temperatures steady.
+  > \[dony\] EcoLoop is built differently. It’s modular so you can actually get into every corner, it self-rinses so you don’t have gunk sitting in there, and it’s insulated to keep your drink just right.
 
 ---
 
@@ -82,7 +82,7 @@
 
 - **Time:** 1:32–1:50  
 - **Script:**  
-  > \[dony\] No motors, no batteries. Just twist the base. A herringbone planetary gear multiplies that motion, spinning a magnetic stir bar inside. Liquid never touches the mechanics. It’s a perfect mix in 15 seconds.
+  > \[dony\] No motors or batteries here. You just twist the base. Inside, there's a cool gear system that spins a magnetic stir bar—so your drink stays clean and the mechanics never touch the liquid. You get a perfect mix in about 15 seconds.
 
 
   
@@ -93,7 +93,7 @@
 - **Time:** 1:50–1:59  
 - **Script:**  
     
-  > \[dony\] Add water, twist, and that same vortex scrubs the walls. It handles a full rinse in 15 seconds flat.
+  > \[dony\] Just add water, give it a twist, and that same vortex scrubs the walls clean for you. It’s a full rinse in just 15 seconds.
 
 ---
 
@@ -101,7 +101,7 @@
 
 - **Time:** 1:59–2:09  
 - **Script:**  
-  > \[dony\] For deep cleans, it comes apart completely by hand. No tools, no hidden corners, no need for special brushes.
+  > \[Arsalan\] For deep cleans, it comes apart completely by hand. No tools, no hidden corners, no need for special brushes.
 
 ---
 
@@ -117,7 +117,7 @@
 
 - **Time:** 2:17–2:45  
 - **Script:**  
-  > \[Arsalan\] We didn't start here. Our first prototype was electric, but it was too risky. We switched to mechanical to gain durability. We’re honest about the trade-offs: it rinses, it doesn’t sterilize; you twist for 15 seconds; and the insulation is a solid two hours, not all day.
+  > \[Arsalan\] We didn't start here. Our first design was electric, but flooded category, water \+ electronics risk, steel shielding the magnetic field, inspired us to switch to mechanical to gain durability. We’re honest about the trade-offs: it rinses, it doesn’t sterilize; the aim is to twist for 15 seconds; and the insulation would be a solid two hours, not all day.
 
 ---
 
@@ -149,7 +149,7 @@
 
 - **Time:** 3:18–3:40  
 - **Script:**  
-  > \[Breanna, Roi\] Sustainability only wins when it’s cheaper for the user. A bottle that actually gets used displaces 500 single-use containers a year. At $40, EcoLoop pays for itself in just five weeks of saved coffee and water purchases.
+  > \[Breanna, Roi\] Sustainability only wins when it's cheaper for the user. Based on the habits our interviewees described, a bottle that actually gets used displaces about 500 single-use containers a year — and saves roughly $390 a year in bought drinks. At $40, EcoLoop pays for itself in just five weeks.
 
 ---
 
