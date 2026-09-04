@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="《约定的魔法》——约定符文体系入门教材">
+    <meta name="theme-color" content="#11152b">
+    <title>约定的魔法 · 约定符文体系入门教材</title>
+    <link rel="icon" href="static/favicon.png">
+    <link rel="stylesheet" href="static/css/magic.css">
+</head>
+<body>
+<div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
+
+<header class="topbar">
+    <button class="icon-button menu-button" id="menu-button" type="button" aria-label="打开目录" aria-controls="sidebar" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
+    <a class="brand" href="magic.html" aria-label="约定的魔法首页">
+        <span class="brand-mark" aria-hidden="true"><i></i></span>
+        <span class="brand-copy">
+            <strong>约定的魔法</strong>
+            <small>约定符文体系入门教材</small>
+        </span>
+    </a>
+    <div class="topbar-meta">
+        <span class="edition-dot" aria-hidden="true"></span>
+        <span>现行教材</span>
+        <a class="home-link" href="index.html">返回主页</a>
+    </div>
+</header>
+
+<div class="page-shell">
+    <aside class="sidebar" id="sidebar" aria-label="教材目录">
+        <div class="sidebar-inner">
+            <button class="overview-link" type="button" data-doc="README.md">
+                <span class="overview-glyph" aria-hidden="true">◇</span>
+                <span><strong>教材总览</strong><small>阅读说明与章节顺序</small></span>
+            </button>
+            <nav class="chapter-nav" id="chapter-nav" aria-label="章节">
+                <div class="nav-skeleton" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </nav>
+            <div class="source-note">
+                <span class="live-mark" aria-hidden="true"></span>
+                <span>内容同步自 Markdown</span>
+            </div>
+        </div>
+    </aside>
+    <button class="sidebar-scrim" id="sidebar-scrim" type="button" aria-label="关闭目录"></button>
+
+    <main class="main-column" id="main-column">
+        <div class="document-path" id="document-path" aria-label="当前位置"></div>
+        <article class="markdown-body" id="article" aria-live="polite" aria-busy="true">
+            <div class="article-loading">
+                <span class="loading-sigil" aria-hidden="true"></span>
+                <p>正在展开时空卷轴…</p>
+            </div>
+        </article>
+        <nav class="page-navigation" id="page-navigation" aria-label="上下篇"></nav>
+        <footer class="document-footer">
+            <span>《约定的魔法》</span>
+            <span aria-hidden="true">·</span>
+            <span>以仓库中的 Markdown 为准</span>
+        </footer>
+    </main>
+
+    <aside class="toc-panel" aria-label="页内目录">
+        <p class="toc-title">本页内容</p>
+        <nav id="toc"></nav>
+    </aside>
+</div>
+
+<script src="static/js/magic.js"></script>
+</body>
+</html>

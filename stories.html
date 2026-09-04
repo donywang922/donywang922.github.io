@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="短篇集——幻想、脑洞与故事片段">
+    <meta name="theme-color" content="#21151b">
+    <title>短篇集</title>
+    <link rel="icon" href="static/favicon.png">
+    <link rel="stylesheet" href="static/css/stories.css">
+</head>
+<body>
+<div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
+
+<header class="topbar">
+    <button class="menu-button" id="menu-button" type="button" aria-label="打开篇目目录" aria-controls="story-sidebar" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
+    <a class="mobile-brand" href="stories.html">短篇集</a>
+    <div class="topbar-actions">
+        <span id="topbar-position">正在载入篇目</span>
+        <a href="index.html">返回主页</a>
+    </div>
+</header>
+
+<aside class="story-sidebar" id="story-sidebar" aria-label="短篇目录">
+    <div class="sidebar-heading">
+        <a href="stories.html" aria-label="短篇集首页">
+            <span class="seal" aria-hidden="true">集</span>
+            <span><strong>短篇集</strong><small>SHORT FICTIONS</small></span>
+        </a>
+        <p>幻想、脑洞与尚待延展的故事片段。</p>
+    </div>
+    <nav class="story-nav" id="story-nav" aria-label="全部篇目">
+        <div class="nav-loading" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    </nav>
+    <p class="source-status"><i aria-hidden="true"></i>同步自《短篇.md》</p>
+</aside>
+<button class="sidebar-scrim" id="sidebar-scrim" type="button" aria-label="关闭篇目目录"></button>
+
+<main class="reading-stage">
+    <article class="story" id="story" aria-live="polite" aria-busy="true">
+        <div class="story-loading">
+            <span aria-hidden="true"></span>
+            <p>正在翻开故事……</p>
+        </div>
+    </article>
+    <nav class="story-pager" id="story-pager" aria-label="上一篇与下一篇"></nav>
+    <footer class="page-footer">故事尚未结束，只是这一页读完了。</footer>
+</main>
+
+<script src="static/js/stories.js"></script>
+</body>
+</html>
